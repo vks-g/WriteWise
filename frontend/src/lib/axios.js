@@ -1,9 +1,8 @@
-import React from 'react'
+import axios from 'axios'
 
-const axios = () => {
-  return (
-    <div>axios</div>
-  )
-}
+const instance = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
+  withCredentials: true,
+})
 
-export default axios
+export default instance

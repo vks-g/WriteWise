@@ -1,68 +1,172 @@
-import React from 'react'
-import { Input } from '@/components/ui/input';
-import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+  CardFooter,
+} from '@/components/ui/card'
+import { toast } from 'sonner'
+import axios from '@/lib/axios'
 
-const Login = () => {
+export default function LoginPage() {
+  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false)
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  })
+  const [errors, setErrors] = useState({})
+
+  const validateForm = () => {
+    const newErrors = {}
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required'
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email'
+    }
+
+    if (!formData.password) {
+      newErrors.password = 'Password is required'
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+    
+    //  I wrote this to clear error for this field when user starts typing
+
+    if (errors[name]) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: '',
+      }))
+    }
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    if (!validateForm()) {
+      toast.error('Please fix the errors below')
+      return
+    }
+
+    setIsLoading(true)
+
+    try {
+      const response = await axios.post('/auth/login', {
+        email: formData.email,
+        password: formData.password,
+      })
+
+      if (response.data.token) {
+        document.cookie = `token=${response.data.token}; path=/; max-age=86400`
+      }
+
+      toast.success('Login successful!')
+      
+      router.push('/dashboard')
+    } 
+    catch (error) {
+      const errorMessage = error.response?.data?.message || 'Login failed. Please try again.'
+      toast.error(errorMessage)
+    } 
+    finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
-    <>
-        <Card className="w-full max-w-sm">
+    <div className="flex items-center justify-center min-h-screen bg-background px-4 py-8">
+      <Card className="w-full max-w-md">
         <CardHeader>
-            <CardTitle>Login to your account</CardTitle>
-            <CardDescription>
-            Enter your email below to login to your account
-            </CardDescription>
-            <CardAction>
-            <Button variant="link">Sign Up</Button>
-            </CardAction>
+          <CardTitle className="text-2xl">Welcome Back</CardTitle>
+          <CardDescription>
+            Sign in to your account to continue
+          </CardDescription>
         </CardHeader>
         <CardContent>
-            <form>
-            <div className="flex flex-col gap-6">
-                <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                    id="email"
-                    type="email"
-                    placeholder="m@example.com"
-                    required
-                />
-                </div>
-                <div className="grid gap-2">
-                <div className="flex items-center">
-                    <Label htmlFor="password">Password</Label>
-                    <a
-                    href="#"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                    >
-                    Forgot your password?
-                    </a>
-                </div>
-                <Input id="password" type="password" required />
-                </div>
+          <form onSubmit={handleSubmit} className="space-y-4">
+
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="m@example.com"
+                value={formData.email}
+                onChange={handleChange}
+                aria-invalid={!!errors.email}
+              />
+              {errors.email && (
+                <p className="text-sm text-destructive">{errors.email}</p>
+              )}
             </div>
-            </form>
+
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">Password</Label>
+                <a
+                  href="/forgot-password"
+                  className="text-sm text-primary hover:underline"
+                >
+                  Forgot?
+                </a>
+              </div>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="••••••••"
+                value={formData.password}
+                onChange={handleChange}
+                aria-invalid={!!errors.password}
+              />
+              {errors.password && (
+                <p className="text-sm text-destructive">{errors.password}</p>
+              )}
+            </div>
+
+   
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Signing in...' : 'Sign In'}
+            </Button>
+          </form>
         </CardContent>
-        <CardFooter className="flex-col gap-2">
-            <Button type="submit" className="w-full">
-            Login
-            </Button>
-            <Button variant="outline" className="w-full">
-            Login with Google
-            </Button>
+        <CardFooter className="flex-col gap-3 border-t pt-4">
+          <p className="text-sm text-muted-foreground text-center">
+            Don&apos;t have an account?{' '}
+            <a
+              href="/signup"
+              className="font-semibold text-primary hover:underline"
+            >
+              Sign up
+            </a>
+          </p>
         </CardFooter>
-        </Card>
-    </>
+      </Card>
+    </div>
   )
 }
-
-export default Login
