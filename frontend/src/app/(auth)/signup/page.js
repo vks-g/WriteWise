@@ -1,7 +1,8 @@
-'use client'
+"use client";
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
@@ -14,11 +15,12 @@ import {
   CardFooter,
 } from '@/components/ui/card'
 import { toast } from 'sonner'
-import axios from '@/lib/axios'
+import { useAuth } from '@/context/AuthContext'
 
 export default function SignupPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const { signup, getCurrentUser } = useAuth()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -81,29 +83,35 @@ export default function SignupPage() {
     setIsLoading(true)
 
     try {
-      const response = await axios.post('/auth/signup', {
+      const result = await signup({
         name: formData.name,
         email: formData.email,
         password: formData.password,
       })
 
+      if (!result?.success) {
+        toast.error(result?.error || 'Signup failed. Please try again.')
+        return
+      }
 
-      if (response.data.token) {
-        document.cookie = `token=${response.data.token}; path=/; max-age=86400`
+      if (!result.user) {
+        await getCurrentUser()
       }
 
       toast.success('Account created successfully!')
-      
+
       router.push('/dashboard')
     } 
     catch (error) {
-      const errorMessage = error.response?.data?.message || 'Signup failed. Please try again.'
-      toast.error(errorMessage)
-    }
-     finally {
+      const message = error?.message || 'Signup failed. Please try again.'
+      toast.error(message)
+    } 
+    finally {
       setIsLoading(false)
     }
   }
+
+  
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background px-4 py-8">
@@ -197,12 +205,12 @@ export default function SignupPage() {
         <CardFooter className="flex-col gap-3 border-t pt-4">
           <p className="text-sm text-muted-foreground text-center">
             Already have an account?{' '}
-            <a
+            <Link
               href="/login"
               className="font-semibold text-primary hover:underline"
             >
               Login
-            </a>
+            </Link>
           </p>
         </CardFooter>
       </Card>

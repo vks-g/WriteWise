@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
@@ -14,11 +15,12 @@ import {
   CardFooter,
 } from '@/components/ui/card'
 import { toast } from 'sonner'
-import axios from '@/lib/axios'
+import { useAuth } from '@/context/AuthContext'
 
 export default function LoginPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const { login, getCurrentUser } = useAuth()
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -70,24 +72,27 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      const response = await axios.post('/auth/login', {
+      const result = await login({
         email: formData.email,
         password: formData.password,
       })
 
-      if (response.data.token) {
-        document.cookie = `token=${response.data.token}; path=/; max-age=86400`
+      if (!result?.success) {
+        toast.error(result?.error || 'Login failed. Please try again.')
+        return
+      }
+
+      if (!result.user) {
+        await getCurrentUser()
       }
 
       toast.success('Login successful!')
-      
+
       router.push('/dashboard')
-    } 
-    catch (error) {
-      const errorMessage = error.response?.data?.message || 'Login failed. Please try again.'
-      toast.error(errorMessage)
-    } 
-    finally {
+    } catch (error) {
+      const message = error?.message || 'Login failed. Please try again.'
+      toast.error(message)
+    } finally {
       setIsLoading(false)
     }
   }
@@ -124,12 +129,12 @@ export default function LoginPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
-                <a
+                <Link
                   href="/forgot-password"
                   className="text-sm text-primary hover:underline"
                 >
                   Forgot?
-                </a>
+                </Link>
               </div>
               <Input
                 id="password"
@@ -158,12 +163,12 @@ export default function LoginPage() {
         <CardFooter className="flex-col gap-3 border-t pt-4">
           <p className="text-sm text-muted-foreground text-center">
             Don&apos;t have an account?{' '}
-            <a
+            <Link
               href="/signup"
               className="font-semibold text-primary hover:underline"
             >
               Sign up
-            </a>
+            </Link>
           </p>
         </CardFooter>
       </Card>

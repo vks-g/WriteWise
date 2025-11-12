@@ -1,9 +1,17 @@
-import React from 'react'
+'use client'
 
-const AuthContext = () => {
-  return (
-    <div>AuthContext</div>
-  )
+import { createContext, useContext } from 'react'
+
+const AuthContext = createContext(undefined)
+
+export const useAuth = () => {
+  const context = useContext(AuthContext)
+
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider')
+  }
+
+  return context
 }
 
 export default AuthContext
