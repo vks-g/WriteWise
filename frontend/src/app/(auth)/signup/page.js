@@ -87,6 +87,7 @@ export default function SignupPage() {
         name: formData.name,
         email: formData.email,
         password: formData.password,
+        confirmPassword: formData.confirmPassword
       })
 
       if (!result?.success) {
@@ -95,7 +96,7 @@ export default function SignupPage() {
       }
 
       if (!result.user) {
-        await getCurrentUser()
+        data = await getCurrentUser()
       }
 
       toast.success('Account created successfully!')
@@ -103,6 +104,8 @@ export default function SignupPage() {
       router.push('/dashboard')
     } 
     catch (error) {
+      console.log(error);
+      
       const message = error?.message || 'Signup failed. Please try again.'
       toast.error(message)
     } 
@@ -165,7 +168,6 @@ export default function SignupPage() {
                 id="password"
                 name="password"
                 type="password"
-                placeholder="••••••••"
                 value={formData.password}
                 onChange={handleChange}
                 aria-invalid={!!errors.password}
@@ -182,7 +184,6 @@ export default function SignupPage() {
                 id="confirmPassword"
                 name="confirmPassword"
                 type="password"
-                placeholder="••••••••"
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 aria-invalid={!!errors.confirmPassword}

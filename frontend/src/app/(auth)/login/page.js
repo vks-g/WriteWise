@@ -83,10 +83,10 @@ export default function LoginPage() {
       }
 
       if (!result.user) {
-        await getCurrentUser()
+        val = await getCurrentUser()
       }
 
-      toast.success('Login successful!')
+      toast.success('Login successful !')
 
       router.push('/dashboard')
     } catch (error) {

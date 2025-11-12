@@ -19,10 +19,13 @@ const getErrorMessage = (error) => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8888'
+  console.log(apiUrl);
 
   const getCurrentUser = useCallback(async () => {
+
     try {
-      const response = await axios.get('/api/auth/me', {
+      const response = await axios.get(`${apiUrl}/auth/me`, {
         withCredentials: true,
       })
 
@@ -53,7 +56,7 @@ export const AuthProvider = ({ children }) => {
 
   const signup = useCallback(async (payload) => {
     try {
-      const response = await axios.post('/api/auth/signup', payload, {
+      const response = await axios.post(`${apiUrl}/auth/signup`, payload, {
         withCredentials: true,
       })
 
@@ -78,7 +81,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = useCallback(async (payload) => {
     try {
-      const response = await axios.post('/api/auth/login', payload, {
+      const response = await axios.post(`${apiUrl}/auth/login`, payload, {
         withCredentials: true,
       })
 
@@ -105,7 +108,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = useCallback(async () => {
     try {
-      await axios.post('/api/auth/logout', {}, {
+      await axios.post(`${apiUrl}/auth/logout`, {}, {
         withCredentials: true,
       })
     }
