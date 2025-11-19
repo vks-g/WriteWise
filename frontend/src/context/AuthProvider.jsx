@@ -19,7 +19,7 @@ const getErrorMessage = (error) => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8888'
+  const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8888"
   console.log(apiUrl);
 
   const getCurrentUser = useCallback(async () => {

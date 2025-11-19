@@ -85,7 +85,8 @@ export default function SignupPage() {
         confirmPassword: formData.confirmPassword
       })
       if (!result?.success) {
-        toast.error(result?.error || 'Signup failed. Please try again.')
+        console.log(result);
+        toast.error(result?.data?.error || 'Signup failed. Please try again.')
         return
       }
       if (!result.user) {

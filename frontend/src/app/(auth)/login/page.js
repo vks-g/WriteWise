@@ -70,7 +70,7 @@ export default function LoginPage() {
         password: formData.password,
       })
       if (!result?.success) {
-        toast.error(result?.error || 'Login failed. Please try again.')
+        toast.error(result?.data?.error || 'Login failed. Please try again.')
         return
       }
       if (!result.user) {
