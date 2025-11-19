@@ -6,7 +6,7 @@ const { GenerateToken } = require('@/utils/generateToken');
 const GoogleAuth = async(req,res) => {
 
     const options = {
-        redirect_uri: `http://localhost:${process.env.PORT}` + process.env.REDIRECT_PATH,
+        redirect_uri: process.env.BACKEND_URL + process.env.REDIRECT_PATH,
         client_id:
         process.env.CLIENT_ID,
         scope: [
@@ -16,6 +16,8 @@ const GoogleAuth = async(req,res) => {
         response_type: "code",
         access_type: "offline",
   };
+
+  console.log(options.redirect_uri);
   
   const authUrl = `https://accounts.google.com/o/oauth2/auth?${new URLSearchParams(options).toString()}`;
   res.redirect(authUrl);
