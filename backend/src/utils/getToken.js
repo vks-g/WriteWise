@@ -9,7 +9,7 @@ const fetchToken = async (code) => {
       code,
       client_id: process.env.CLIENT_ID,
       client_secret: process.env.CLIENT_SECRET,
-      redirect_uri:  `http://localhost:${process.env.PORT}` + process.env.REDIRECT_PATH,
+      redirect_uri:  process.env.BACKEND_URL + process.env.REDIRECT_PATH,
       grant_type: "authorization_code"
     }).toString()
   });
