@@ -138,4 +138,4 @@ npm run dev
 - **React Bits** for providing animated UI components
 - **Prisma** for clean database workflows
 - **Google** for OAuth 2.0
-- **OpenRouter** for free api key ( will update soon)
+- **OpenRouter** for free api key ( will update soon )
