@@ -113,7 +113,6 @@ export const AuthProvider = ({ children }) => {
       })
     }
     catch (error) {
-      // ignore logout route errors but expose message for callers
       return {
         success: false,
         error: getErrorMessage(error),
@@ -129,6 +128,12 @@ export const AuthProvider = ({ children }) => {
     }
   }, [])
 
+  const googleLogin = useCallback(() => {
+
+    window.location.href = `${apiUrl}/auth/google`;
+
+  }, [])
+
   const value = useMemo(() => ({
     user,
     loading,
@@ -138,7 +143,8 @@ export const AuthProvider = ({ children }) => {
     logout,
     getCurrentUser,
     setUser,
-  }), [getCurrentUser, loading, login, logout, signup, user])
+    googleLogin,
+  }), [getCurrentUser, loading, login, logout, signup, user, googleLogin])
 
   return (
     <AuthContext.Provider value={value}>

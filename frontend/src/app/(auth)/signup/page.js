@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from 'react'
+import { useState , useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSearchParams } from "next/navigation";
 import Link from 'next/link'
 import { Eye, EyeOff } from 'lucide-react'
 import { toast } from 'sonner'
@@ -13,7 +14,9 @@ export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const { signup, getCurrentUser } = useAuth()
+  const { signup, getCurrentUser , googleLogin } = useAuth()
+  const searchParams = useSearchParams();
+  const OAuthError = searchParams.get("error");
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -81,23 +84,18 @@ export default function SignupPage() {
         password: formData.password,
         confirmPassword: formData.confirmPassword
       })
-
       if (!result?.success) {
         toast.error(result?.error || 'Signup failed. Please try again.')
         return
       }
-
       if (!result.user) {
         data = await getCurrentUser()
       }
-
       toast.success('Account created successfully!')
-
       router.push('/dashboard')
     } 
     catch (error) {
       console.log(error);
-      
       const message = error?.message || 'Signup failed. Please try again.'
       toast.error(message)
     } 
@@ -106,33 +104,43 @@ export default function SignupPage() {
     }
   }
 
+  const handleGoogleLogin = async () => {
+    googleLogin();
+  }
+  
+  useEffect(() => {
+    if (OAuthError) {
+      toast.error('Google authentication failed. Please try again.')
+    }
+  }, [OAuthError]);
+
   return (
     <div className="relative w-full min-h-screen bg-gradient-to-b from-black via-black to-purple-900/50 dark:from-black dark:via-black dark:to-pink-900/50 overflow-hidden">
-      {/* Gradient overlay for purplish-pink effect towards bottom */}
+      
       <div className="fixed inset-0 bg-gradient-to-b from-transparent via-transparent to-gradient-to-b to-purple-600/20 pointer-events-none" />
       
       <div className="relative z-10 flex items-center justify-center min-h-screen px-4 py-8">
-        {/* Two-column layout: Desktop, Stack on Mobile */}
+      
         <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
           
-          {/* Left Section: Signup Form */}
+      
           <div className="w-full flex justify-center lg:justify-end lg:pr-48">
             <div className="w-full max-w-sm relative overflow-hidden rounded-2xl shadow-2xl shadow-purple-500/50 before:absolute before:inset-0 before:rounded-2xl before:p-[2px] before:bg-gradient-to-r before:from-purple-500 before:via-pink-500 before:to-purple-500 before:-z-10">
               
-              {/* Content wrapper - black and white */}
+  
               <div className="relative z-10 rounded-2xl bg-black/90 dark:bg-black border border-white/10">
               
-                {/* Header */}
+       
                 <div className="px-5 sm:px-6 pt-6 pb-6 space-y-1">
                   <h1 className="text-2xl font-bold text-white">Create Account</h1>
                   <p className="text-xs text-white/60">Start your blogging journey with WriteWise</p>
                 </div>
 
-                {/* Form Content */}
+       
                 <div className="px-5 sm:px-6 py-5 max-h-[calc(100vh-200px)] overflow-y-auto">
                   <form onSubmit={handleSubmit} className="space-y-3">
                     
-                    {/* Name Field */}
+   
                     <div className="space-y-4">
                       <label htmlFor="name" className="block text-xs font-semibold text-white/80 uppercase tracking-wider mb-2">Full Name</label>
                       <input
@@ -150,7 +158,7 @@ export default function SignupPage() {
                       )}
                     </div>
 
-                    {/* Email Field */}
+                 
                     <div className="space-y-4">
                       <label htmlFor="email" className="block text-xs font-semibold text-white/80 uppercase tracking-wider mb-2">Email Address</label>
                       <input
@@ -168,7 +176,7 @@ export default function SignupPage() {
                       )}
                     </div>
 
-                    {/* Password Field */}
+         
                     <div className="space-y-4">
                       <label htmlFor="password" className="block text-xs font-semibold text-white/80 uppercase tracking-wider mb-2">Password</label>
                       <div className="relative">
@@ -196,7 +204,7 @@ export default function SignupPage() {
                       )}
                     </div>
 
-                    {/* Confirm Password Field */}
+              
                     <div className="space-y-4">
                       <label htmlFor="confirmPassword" className="block text-xs font-semibold text-white/80 uppercase tracking-wider mb-2">Confirm Password</label>
                       <div className="relative">
@@ -224,7 +232,7 @@ export default function SignupPage() {
                       )}
                     </div>
 
-                    {/* Sign Up Button */}
+ 
                     <button
                       type="submit"
                       disabled={isLoading}
@@ -234,22 +242,17 @@ export default function SignupPage() {
                     </button>
                   </form>
 
-                  {/* Divider */}
+           
                   <div className="relative my-4">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-white/10" />
-                    </div>
                     <div className="relative flex justify-center text-xs">
-                      <span className="px-2 bg-white/5 text-white/60">or continue with</span>
+                      <span className="px-2 bg-white/5 text-white/60">or </span>
                     </div>
                   </div>
 
-                  {/* Google Sign-up Button */}
+ 
                   <button
                     type="button"
-                    onClick={() => {
-                      toast.info('Google Sign-up coming soon!')
-                    }}
+                    onClick={handleGoogleLogin}
                     className="w-full px-4 py-2.5 rounded-lg font-medium text-sm text-white bg-white/10 hover:bg-white/15 border border-white/20 dark:border-white/10 backdrop-blur-sm flex items-center justify-center gap-2 transition-all hover:shadow-lg"
                   >
                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
@@ -262,7 +265,7 @@ export default function SignupPage() {
                   </button>
                 </div>
 
-                {/* Footer */}
+       
                 <div className="px-5 sm:px-6 py-4 border-t border-white/10 text-center">
                   <p className="text-xs text-white/70">
                     Already have an account?{' '}
@@ -278,7 +281,7 @@ export default function SignupPage() {
             </div>
           </div>
 
-          {/* Right Section: CardSwap Animation */}
+
           <div className="hidden lg:flex justify-center lg:justify-start items-center h-[600px]">
             <CardSwap width={750} height={750} cardDistance={50} verticalDistance={60} delay={4000}>
               <Card customClass="w-96 h-80 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border-white/30 backdrop-blur-md flex items-center justify-center">

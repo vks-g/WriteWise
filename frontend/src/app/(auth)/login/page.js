@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState , useEffect} from 'react'
 import { useRouter } from 'next/navigation'
+import { useSearchParams } from "next/navigation";
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { useAuth } from '@/context/AuthContext'
@@ -12,7 +13,9 @@ export default function LoginPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const { login, getCurrentUser } = useAuth()
+  const { login, getCurrentUser , googleLogin } = useAuth()
+  const searchParams = useSearchParams();
+  const OAuthError = searchParams.get("error");
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -66,54 +69,61 @@ export default function LoginPage() {
         email: formData.email,
         password: formData.password,
       })
-
       if (!result?.success) {
         toast.error(result?.error || 'Login failed. Please try again.')
         return
       }
-
       if (!result.user) {
         val = await getCurrentUser()
       }
-
       toast.success('Login successful !')
-
       router.push('/dashboard')
-    } catch (error) {
+    } 
+    catch (error) {
       const message = error?.message || 'Login failed. Please try again.'
       toast.error(message)
-    } finally {
+    } 
+    finally {
       setIsLoading(false)
     }
   }
 
+  const handleGoogleLogin = async () => {
+    googleLogin();
+  }
+    
+  useEffect(() => {
+    if (OAuthError) {
+      toast.error('Google authentication failed. Please try again.')
+    }
+  }, [OAuthError]);
+
   return (
     <div className="relative w-full min-h-screen bg-gradient-to-b from-black via-black to-purple-900/50 dark:from-black dark:via-black dark:to-pink-900/50 overflow-hidden">
-      {/* Gradient overlay for purplish-pink effect towards bottom */}
+
       <div className="fixed inset-0 bg-gradient-to-b from-transparent via-transparent to-gradient-to-b to-purple-600/20 pointer-events-none" />
       
       <div className="relative z-10 flex items-center justify-center min-h-screen px-4 py-8">
-        {/* Two-column layout: Desktop, Stack on Mobile */}
+
         <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
           
-          {/* Left Section: Login Form */}
+
           <div className="w-full flex justify-center lg:justify-end lg:pr-48">
             <div className="w-full max-w-sm relative overflow-hidden rounded-2xl shadow-2xl shadow-purple-500/50 before:absolute before:inset-0 before:rounded-2xl before:p-[2px] before:bg-gradient-to-r before:from-purple-500 before:via-pink-500 before:to-purple-500 before:-z-10">
               
-              {/* Content wrapper - black and white */}
+
               <div className="relative z-10 rounded-2xl bg-black/90 dark:bg-black border border-white/10">
-              
-                {/* Header */}
+
                 <div className="px-5 sm:px-6 pt-6 pb-6 space-y-1">
                   <h1 className="text-2xl font-bold text-white">Welcome Back</h1>
                   <p className="text-xs text-white/60">Sign in to your account to continue</p>
                 </div>
 
-                {/* Form Content */}
+     
                 <div className="px-5 sm:px-6 py-5">
                   <form onSubmit={handleSubmit} className="space-y-4">
 
-                    {/* Email Field */}
+    
                     <div className="space-y-4">
                       <label htmlFor="email" className="block text-xs font-semibold text-white/80 uppercase tracking-wider mb-2">Email Address</label>
                       <input
@@ -131,7 +141,7 @@ export default function LoginPage() {
                       )}
                     </div>
 
-                    {/* Password Field */}
+           
                     <div className="space-y-4">
                       <div className="flex items-center justify-between mb-2">
                         <label htmlFor="password" className="text-xs font-semibold text-white/80 uppercase tracking-wider">Password</label>
@@ -167,7 +177,6 @@ export default function LoginPage() {
                       )}
                     </div>
 
-                    {/* Sign In Button */}
                     <button
                       type="submit"
                       disabled={isLoading}
@@ -177,22 +186,17 @@ export default function LoginPage() {
                     </button>
                   </form>
 
-                  {/* Divider */}
+     
                   <div className="relative my-4">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-white/10" />
-                    </div>
                     <div className="relative flex justify-center text-xs">
-                      <span className="px-2 bg-white/5 text-white/60">or continue with</span>
+                      <span className="px-2 bg-white/5 text-white/60">or </span>
                     </div>
                   </div>
 
-                  {/* Google Sign-in Button */}
+   
                   <button
                     type="button"
-                    onClick={() => {
-                      toast.info('Google Sign-in coming soon!')
-                    }}
+                    onClick={handleGoogleLogin}
                     className="w-full px-4 py-2.5 rounded-lg font-medium text-sm text-white bg-white/10 hover:bg-white/15 border border-white/20 dark:border-white/10 backdrop-blur-sm flex items-center justify-center gap-2 transition-all hover:shadow-lg"
                   >
                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
@@ -205,7 +209,7 @@ export default function LoginPage() {
                   </button>
                 </div>
 
-                {/* Footer */}
+   
                 <div className="px-5 sm:px-6 py-4 border-t border-white/10 text-center">
                   <p className="text-xs text-white/70">
                     Don&apos;t have an account?{' '}
@@ -221,7 +225,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Right Section: CardSwap Animation */}
+
           <div className="hidden lg:flex justify-center lg:justify-start items-center h-[600px]">
             <CardSwap width={750} height={750} cardDistance={50} verticalDistance={60} delay={4000}>
               <Card customClass="w-96 h-80 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border-white/30 backdrop-blur-md flex items-center justify-center">

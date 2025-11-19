@@ -27,8 +27,8 @@ app.get('/', (req, res) => {
   res.send('Writewise Blog Backend is running');
 });
 
-// const PORT = process.env.PORT || 5000;
-const PORT = 8888
+const PORT = process.env.PORT || 8888;
+// const PORT = 8888
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
