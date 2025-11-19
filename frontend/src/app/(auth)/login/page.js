@@ -89,6 +89,7 @@ export default function LoginPage() {
   }
 
   const handleGoogleLogin = async () => {
+    setIsLoading(true);
     googleLogin();
   }
     
@@ -101,9 +102,32 @@ export default function LoginPage() {
   return (
     <div className="relative w-full min-h-screen bg-gradient-to-b from-black via-black to-purple-900/50 dark:from-black dark:via-black dark:to-pink-900/50 overflow-hidden">
 
-      <div className="fixed inset-0 bg-gradient-to-b from-transparent via-transparent to-gradient-to-b to-purple-600/20 pointer-events-none" />
+      <div className={`fixed inset-0 bg-gradient-to-b from-transparent via-transparent to-gradient-to-b to-purple-600/20 pointer-events-none ${isLoading ? 'backdrop-blur-2xl' : ''}`} />
       
-      <div className="relative z-10 flex items-center justify-center min-h-screen px-4 py-8">
+      {isLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-2xl" />
+          
+          <div className="relative z-10 bg-gradient-to-br from-purple-950/80 via-black/90 to-pink-950/80 dark:from-purple-950/80 dark:via-black/90 dark:to-pink-950/80 border border-white/10 rounded-2xl shadow-2xl shadow-purple-500/50 p-8 sm:p-10 max-w-sm w-full">
+            <div className="flex flex-col items-center justify-center space-y-6">
+
+              <div className="relative w-16 h-16 sm:w-20 sm:h-20">
+                <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-cyan-400 border-r-purple-400 animate-spin" />
+                <div className="absolute inset-2 rounded-full border-4 border-transparent border-b-pink-400 border-l-purple-400 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '2s' }} />
+              </div>
+              
+             
+              <div className="text-center space-y-2">
+                <p className="text-lg sm:text-xl font-semibold text-white">Processing...</p>
+                <p className="text-sm text-white/60">Render is slow broo !! Wait ...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      <div className={`relative z-10 flex items-center justify-center min-h-screen px-4 py-8 ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}>
 
         <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
           
@@ -166,7 +190,7 @@ export default function LoginPage() {
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors cursor-pointer"
                           aria-label={showPassword ? 'Hide password' : 'Show password'}
                         >
                           {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -180,7 +204,7 @@ export default function LoginPage() {
                     <button
                       type="submit"
                       disabled={isLoading}
-                      className="w-full mt-5 px-4 py-2.5 rounded-lg font-semibold text-sm text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                      className="w-full mt-5 px-4 py-2.5 rounded-lg font-semibold text-sm text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-all duration-200"
                     >
                       {isLoading ? 'Signing in...' : 'Sign In'}
                     </button>
@@ -197,7 +221,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={handleGoogleLogin}
-                    className="w-full px-4 py-2.5 rounded-lg font-medium text-sm text-white bg-white/10 hover:bg-white/15 border border-white/20 dark:border-white/10 backdrop-blur-sm flex items-center justify-center gap-2 transition-all hover:shadow-lg"
+                    className="w-full px-4 py-2.5 rounded-lg font-medium text-sm text-white bg-white/10 hover:bg-white/15 border border-white/20 dark:border-white/10 backdrop-blur-sm flex items-center justify-center gap-2 transition-all hover:shadow-lg cursor-pointer"
                   >
                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />

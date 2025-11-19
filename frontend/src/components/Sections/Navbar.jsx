@@ -110,7 +110,7 @@ const Navbar = () => {
               <div className="flex-shrink-0 mt-2">
                 <button
                   onClick={handleLogoClick}
-                  className="hover:opacity-80 transition-opacity"
+                  className="hover:opacity-80 transition-opacity cursor-pointer"
                 >
                   <img src="/logo.svg" alt="WriteWise Logo" className="h-10 w-auto" style={{ filter: 'brightness(0) invert(1)' }} />
                 </button>
@@ -122,11 +122,11 @@ const Navbar = () => {
                   <div className="flex gap-7">
                     <button
                       onClick={handleAboutClick}
-                      className="px-6 py-2 text-lg font-medium text-foreground hover:text-cyan-400 transition-colors duration-300"
+                      className="px-6 py-2 text-lg font-medium text-foreground hover:text-cyan-400 transition-colors duration-300 cursor-pointer"
                     >
                       About
                     </button>
-                    <button className="px-6 py-2 text-lg font-medium text-foreground hover:text-cyan-400 transition-colors duration-300">
+                    <button className="px-6 py-2 text-lg font-medium text-foreground hover:text-cyan-400 transition-colors duration-300 cursor-pointer">
                       <Link href="/posts">Posts</Link>
                     </button>
                   </div>
@@ -157,7 +157,7 @@ const Navbar = () => {
                   </div>
                   <button
                     onClick={handleSearchClick}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-foreground transition-colors"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                     aria-label="Search"
                   >
                     <Search size={20} />
@@ -210,7 +210,7 @@ const Navbar = () => {
                   p-2 rounded-lg
                   text-muted-foreground hover:text-foreground
                   hover:bg-white/10 dark:hover:bg-white/5
-                  transition-colors
+                  transition-colors cursor-pointer
                 "
                 aria-label="Close modal"
               >
@@ -253,7 +253,7 @@ const Navbar = () => {
           {/* Hamburger Menu */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="p-2 text-foreground hover:text-primary transition-colors"
+            className="p-2 text-foreground hover:text-primary transition-colors cursor-pointer"
             aria-label="Toggle menu"
           >
             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}

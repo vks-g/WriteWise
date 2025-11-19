@@ -101,7 +101,7 @@ const FeaturedGallery = () => {
         {/* Call to Action */}
         <div className="mt-12 sm:mt-16 lg:mt-20 flex justify-center px-4 sm:px-6 lg:px-8">
           <Link href="/posts">
-            <button className="px-8 py-3 sm:px-10 sm:py-4 rounded-full font-semibold text-white backdrop-blur-md bg-white/15 dark:bg-white/10 hover:bg-white/25 dark:hover:bg-white/15 border border-white/20 dark:border-white/10 shadow-lg hover:shadow-xl transition-all duration-400 hover:text-cyan-300">
+            <button className="px-8 py-3 sm:px-10 sm:py-4 rounded-full font-semibold text-white backdrop-blur-md bg-white/15 dark:bg-white/10 hover:bg-white/25 dark:hover:bg-white/15 border border-white/20 dark:border-white/10 shadow-lg hover:shadow-xl transition-all duration-400 hover:text-cyan-300 cursor-pointer">
               Explore All Blogs
             </button>
           </Link>
