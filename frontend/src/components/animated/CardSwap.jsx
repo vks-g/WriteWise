@@ -5,7 +5,11 @@ export const Card = forwardRef(({ customClass, ...rest }, ref) => (
   <div
     ref={ref}
     {...rest}
-    className={`absolute top-1/2 left-1/2 rounded-xl border border-white bg-black [transform-style:preserve-3d] [will-change:transform] [backface-visibility:hidden] ${customClass ?? ''} ${rest.className ?? ''}`.trim()} />
+    className={`absolute top-1/2 left-1/2 rounded-xl border border-white bg-black shadow-2xl shadow-purple-500/50 [transform-style:preserve-3d] [will-change:transform] [backface-visibility:hidden] ${customClass ?? ''} ${rest.className ?? ''}`.trim()}
+    style={{
+      boxShadow: '0 20px 60px rgba(168, 85, 247, 0.6), 0 0 30px rgba(236, 72, 153, 0.4)',
+      ...rest.style
+    }} />
 ));
 Card.displayName = 'Card';
 

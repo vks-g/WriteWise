@@ -1,5 +1,5 @@
 'use client'
-
+import ElectricBorder from '@/components/animated/ElectricBorder'
 
 const Hero = () => {
   return (
@@ -14,16 +14,19 @@ const Hero = () => {
             tracking-tight
             animate-fade-in
           "
-          style={{
+        style={{
             fontFamily: 'var(--font-geist-sans), system-ui, -apple-system, sans-serif',
-            fontVariationSettings: '\"wght\" 900',
-          }}
+            fontVariationSettings: '"wght" 700, "slnt" 0',
+        }}
+
         >
           <span className="block mb-2 sm:mb-3 lg:mb-4">
             Your voice.
           </span>
           <span className="block mb-2 sm:mb-3 lg:mb-4">
+        <ElectricBorder color="#a30586" thickness={5.5}  chaos={1.7} >
             Supercharged by AI.
+        </ElectricBorder>
           </span>
           <span className="block">
             Built for storytellers who never Stop.

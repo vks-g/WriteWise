@@ -1,6 +1,7 @@
 'use client'
 
 import SpotlightCard from '@/components/animated/SpotlightCard'
+import ElectricBorder from '@/components/animated/ElectricBorder'
 
 const USPSection = () => {
   const uspPoints = [
@@ -48,17 +49,18 @@ const USPSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-6">
           {uspPoints.map(usp => (
             <div key={usp.id} className="h-full">
+            <ElectricBorder>
               <SpotlightCard
                 className="
                   h-full flex flex-col justify-start
                   border-white/10 dark:border-white/5
-                  bg-white/3 dark:bg-black/20
-                  backdrop-blur-md
-                  hover:bg-white/5 dark:hover:bg-black/30
+                  bg-white/1 dark:bg-black/40
+                  backdrop-blur-xl
+                  hover:bg-white/3 dark:hover:bg-black/60
                   hover:border-white/20 dark:hover:border-white/10
                   transition-all duration-300
                 "
-                spotlightColor="rgba(82, 39, 255, 0.3)"
+                spotlightColor="rgba(82, 39, 255, 0.5)"
               >
                 {/* Card Content */}
                 <div className="flex flex-col h-full">
@@ -86,17 +88,16 @@ const USPSection = () => {
                   </div>
                 </div>
               </SpotlightCard>
+              </ElectricBorder>
             </div>
           ))}
         </div>
 
         {/* Optional: Bottom CTA */}
         <div className="mt-16 sm:mt-20 lg:mt-28 w-full flex justify-center px-4 sm:px-6 lg:px-8">
-          <div className="px-6 sm:px-8 py-0 rounded-lg backdrop-blur-md bg-white/5 dark:bg-black/30">
             <p className="text-sm sm:text-base text-muted-foreground text-center">
               ✨ Ready to revolutionize your writing? <span className="text-primary font-semibold">Start free today</span>
             </p>
-          </div>
         </div>
     </section>
   )

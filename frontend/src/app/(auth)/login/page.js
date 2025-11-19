@@ -3,20 +3,10 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from '@/components/ui/card'
 import { toast } from 'sonner'
 import { useAuth } from '@/context/AuthContext'
 import { Eye, EyeOff } from 'lucide-react'
+import CardSwap, { Card } from '@/components/animated/CardSwap'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -53,8 +43,6 @@ export default function LoginPage() {
       [name]: value,
     }))
     
-    //  I wrote this to clear error for this field when user starts typing
-
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -100,139 +88,174 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="relative flex items-center justify-center min-h-screen bg-gradient-to-br from-background via-background to-primary/5 px-4 py-8 overflow-hidden">
-      {/* Decorative blur elements */}
-      <div className="absolute top-10 -left-32 w-96 h-96 bg-primary/20 rounded-full blur-3xl opacity-30 dark:opacity-20" />
-      <div className="absolute bottom-10 -right-32 w-96 h-96 bg-accent/20 rounded-full blur-3xl opacity-30 dark:opacity-20" />
+    <div className="relative w-full min-h-screen bg-gradient-to-b from-black via-black to-purple-900/50 dark:from-black dark:via-black dark:to-pink-900/50 overflow-hidden">
+      {/* Gradient overlay for purplish-pink effect towards bottom */}
+      <div className="fixed inset-0 bg-gradient-to-b from-transparent via-transparent to-gradient-to-b to-purple-600/20 pointer-events-none" />
       
-      {/* Card container */}
-      <Card className="relative w-full max-w-md backdrop-blur-md bg-card/95 border border-border/50 shadow-2xl dark:shadow-xl">
-        <CardHeader className="space-y-2">
-          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            Welcome Back
-          </CardTitle>
-          <CardDescription className="text-base">
-            Sign in to your account to continue
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="relative z-10 flex items-center justify-center min-h-screen px-4 py-8">
+        {/* Two-column layout: Desktop, Stack on Mobile */}
+        <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+          
+          {/* Left Section: Login Form */}
+          <div className="w-full flex justify-center lg:justify-end lg:pr-48">
+            <div className="w-full max-w-sm relative overflow-hidden rounded-2xl shadow-2xl shadow-purple-500/50 before:absolute before:inset-0 before:rounded-2xl before:p-[2px] before:bg-gradient-to-r before:from-purple-500 before:via-pink-500 before:to-purple-500 before:-z-10">
+              
+              {/* Content wrapper - black and white */}
+              <div className="relative z-10 rounded-2xl bg-black/90 dark:bg-black border border-white/10">
+              
+                {/* Header */}
+                <div className="px-5 sm:px-6 pt-6 pb-6 space-y-1">
+                  <h1 className="text-2xl font-bold text-white">Welcome Back</h1>
+                  <p className="text-xs text-white/60">Sign in to your account to continue</p>
+                </div>
 
-            {/* Email Field */}
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium">Email</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="m@example.com"
-                value={formData.email}
-                onChange={handleChange}
-                aria-invalid={!!errors.email}
-                className="bg-background/50 border-border/50 backdrop-blur-sm"
-              />
-              {errors.email && (
-                <p className="text-xs text-destructive font-medium">{errors.email}</p>
-              )}
-            </div>
+                {/* Form Content */}
+                <div className="px-5 sm:px-6 py-5">
+                  <form onSubmit={handleSubmit} className="space-y-4">
 
-            {/* Password Field */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-sm font-medium">Password</Label>
-                <Link
-                  href="/forgot-password"
-                  className="text-xs text-primary hover:text-primary/80 hover:underline transition-colors"
-                >
-                  Forgot?
-                </Link>
+                    {/* Email Field */}
+                    <div className="space-y-4">
+                      <label htmlFor="email" className="block text-xs font-semibold text-white/80 uppercase tracking-wider mb-2">Email Address</label>
+                      <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        placeholder="m@example.com"
+                        value={formData.email}
+                        onChange={handleChange}
+                        aria-invalid={!!errors.email}
+                        className="w-full px-3 py-2 rounded-lg bg-white/10 dark:bg-white/5 border border-white/20 dark:border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-transparent backdrop-blur-sm transition-all text-sm"
+                      />
+                      {errors.email && (
+                        <p className="text-xs text-red-400 font-medium">{errors.email}</p>
+                      )}
+                    </div>
+
+                    {/* Password Field */}
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <label htmlFor="password" className="text-xs font-semibold text-white/80 uppercase tracking-wider">Password</label>
+                        <Link
+                          href="/forgot-password"
+                          className="text-xs text-cyan-400 hover:text-cyan-300 hover:underline transition-colors"
+                        >
+                          Forgot?
+                        </Link>
+                      </div>
+                      <div className="relative">
+                        <input
+                          id="password"
+                          name="password"
+                          type={showPassword ? 'text' : 'password'}
+                          placeholder="••••••••"
+                          value={formData.password}
+                          onChange={handleChange}
+                          aria-invalid={!!errors.password}
+                          className="w-full px-3 py-2 rounded-lg bg-white/10 dark:bg-white/5 border border-white/20 dark:border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-transparent backdrop-blur-sm pr-10 transition-all text-sm"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors"
+                          aria-label={showPassword ? 'Hide password' : 'Show password'}
+                        >
+                          {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                      </div>
+                      {errors.password && (
+                        <p className="text-xs text-red-400 font-medium">{errors.password}</p>
+                      )}
+                    </div>
+
+                    {/* Sign In Button */}
+                    <button
+                      type="submit"
+                      disabled={isLoading}
+                      className="w-full mt-5 px-4 py-2.5 rounded-lg font-semibold text-sm text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                    >
+                      {isLoading ? 'Signing in...' : 'Sign In'}
+                    </button>
+                  </form>
+
+                  {/* Divider */}
+                  <div className="relative my-4">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-white/10" />
+                    </div>
+                    <div className="relative flex justify-center text-xs">
+                      <span className="px-2 bg-white/5 text-white/60">or continue with</span>
+                    </div>
+                  </div>
+
+                  {/* Google Sign-in Button */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      toast.info('Google Sign-in coming soon!')
+                    }}
+                    className="w-full px-4 py-2.5 rounded-lg font-medium text-sm text-white bg-white/10 hover:bg-white/15 border border-white/20 dark:border-white/10 backdrop-blur-sm flex items-center justify-center gap-2 transition-all hover:shadow-lg"
+                  >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+                      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+                      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+                    </svg>
+                    Continue with Google
+                  </button>
+                </div>
+
+                {/* Footer */}
+                <div className="px-5 sm:px-6 py-4 border-t border-white/10 text-center">
+                  <p className="text-xs text-white/70">
+                    Don&apos;t have an account?{' '}
+                    <Link
+                      href="/signup"
+                      className="font-semibold text-cyan-400 hover:text-cyan-300 hover:underline transition-colors"
+                    >
+                      Sign up
+                    </Link>
+                  </p>
+                </div>
               </div>
-              <div className="relative">
-                <Input
-                  id="password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="••••••••"
-                  value={formData.password}
-                  onChange={handleChange}
-                  aria-invalid={!!errors.password}
-                  className="bg-background/50 border-border/50 backdrop-blur-sm pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-              {errors.password && (
-                <p className="text-xs text-destructive font-medium">{errors.password}</p>
-              )}
-            </div>
-
-            <Button
-              type="submit"
-              className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold h-10"
-              disabled={isLoading}
-            >
-              {isLoading ? 'Signing in...' : 'Sign In'}
-            </Button>
-          </form>
-
-          {/* Divider */}
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border/30" />
-            </div>
-            <div className="relative flex justify-center text-xs">
-              <span className="px-2 bg-card/95 text-muted-foreground">or</span>
             </div>
           </div>
 
-          {/* Google Sign-in Button */}
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full border-border/50 hover:bg-background/50"
-            onClick={() => {
-              toast.info('Google Sign-in coming soon!')
-            }}
-          >
-            <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
-              <path
-                fill="currentColor"
-                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-              />
-              <path
-                fill="currentColor"
-                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-              />
-              <path
-                fill="currentColor"
-                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-              />
-              <path
-                fill="currentColor"
-                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-              />
-            </svg>
-            Continue with Google
-          </Button>
-        </CardContent>
-        <CardFooter className="flex-col gap-3 border-t border-border/30 pt-4">
-          <p className="text-sm text-muted-foreground text-center">
-            Don&apos;t have an account?{' '}
-            <Link
-              href="/signup"
-              className="font-semibold text-primary hover:text-primary/80 hover:underline transition-colors"
-            >
-              Sign up
-            </Link>
-          </p>
-        </CardFooter>
-      </Card>
+          {/* Right Section: CardSwap Animation */}
+          <div className="hidden lg:flex justify-center lg:justify-start items-center h-[600px]">
+            <CardSwap width={750} height={750} cardDistance={50} verticalDistance={60} delay={4000}>
+              <Card customClass="w-96 h-80 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border-white/30 backdrop-blur-md flex items-center justify-center">
+                <div className="text-white text-center px-6">
+                  <div className="text-4xl mb-3">✨</div>
+                  <h3 className="text-xl font-bold mb-2">AI-Powered</h3>
+                  <p className="text-sm text-white/80">Your creative companion</p>
+                </div>
+              </Card>
+              <Card customClass="w-96 h-80 bg-gradient-to-br from-purple-500/20 to-pink-500/20 border-white/30 backdrop-blur-md flex items-center justify-center">
+                <div className="text-white text-center px-6">
+                  <div className="text-4xl mb-3">📝</div>
+                  <h3 className="text-xl font-bold mb-2">Write Freely</h3>
+                  <p className="text-sm text-white/80">Express your thoughts</p>
+                </div>
+              </Card>
+              <Card customClass="w-96 h-80 bg-gradient-to-br from-orange-500/20 to-red-500/20 border-white/30 backdrop-blur-md flex items-center justify-center">
+                <div className="text-white text-center px-6">
+                  <div className="text-4xl mb-3">🚀</div>
+                  <h3 className="text-xl font-bold mb-2">Publish Fast</h3>
+                  <p className="text-sm text-white/80">Share with the world</p>
+                </div>
+              </Card>
+               <Card customClass="w-96 h-80 bg-gradient-to-br from-orange-500/20 to-red-500/20 border-white/30 backdrop-blur-md flex items-center justify-center">
+                <div className="text-white text-center px-6">
+                  <div className="text-4xl mb-3">🚀</div>
+                  <h3 className="text-xl font-bold mb-2">Publish Fast</h3>
+                  <p className="text-sm text-white/80">Share with the world</p>
+                </div>
+              </Card>
+            </CardSwap>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

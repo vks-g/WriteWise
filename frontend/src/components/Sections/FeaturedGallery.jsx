@@ -84,7 +84,7 @@ const FeaturedGallery = () => {
               textColor="#ffffff"
               borderRadius={0.08}
               font="bold 28px Figtree"
-              scrollSpeed={2.5}
+              scrollSpeed={0.7}
               scrollEase={0.05}
             />
           </div>
