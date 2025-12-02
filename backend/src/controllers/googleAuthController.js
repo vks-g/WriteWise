@@ -51,10 +51,11 @@ const GoogleAuthCallback = async (req, res) => {
     }
 
     const token = GenerateToken({ id: user.id , email : user.email , name : user.name });
+    const isProduction = process.env.NODE_ENV === 'production';
     res.cookie('token', token, {
         httpOnly: true,
-        secure: true,
-        sameSite: 'Strict' ,
+        secure: isProduction,
+        sameSite: isProduction ? 'None' : 'Lax',
         maxAge: 10 * 60 * 60 * 1000
     });
 
