@@ -13,11 +13,11 @@ const Register = async (req, res) => {
       password: hashedPassword,
     });
     const token = GenerateToken({ id: newUser.id , email , name });
-    res.cookie('token', token, { 
+    res.cookie('token', token, {
         httpOnly: true,
         secure: true,
-        sameSite: 'Strict' , 
-        maxAge: 10 * 60 * 60 * 1000 
+        sameSite: 'Strict' ,
+        maxAge: 10 * 60 * 60 * 1000
     });
     console.log('User registered:', newUser);
     res.status(201).json({ success: true, user: newUser});
@@ -44,11 +44,11 @@ const Login = async (req, res) => {
       return res.status(400).json({ error: 'Invalid email or password' });
     }
     const token = GenerateToken({ id: user.id , email : user.email , name : user.name });
-    res.cookie('token', token, { 
+    res.cookie('token', token, {
         httpOnly: true,
         secure: true,
-        sameSite: 'Strict' , 
-        maxAge: 10 * 60 * 60 * 1000 
+        sameSite: 'Strict' ,
+        maxAge: 10 * 60 * 60 * 1000
     });
     console.log(token)
     res.status(200).json({ success: true, user });
@@ -66,11 +66,25 @@ const Logout = (req, res) => {
 
 };
 
-const GetCurrentUser = (req, res) => {
+const GetCurrentUser = async (req, res) => {
+    try {
+        const payload = req.user;
 
-    const user = req.user || null;
-    res.status(200).json({ success: true, user });
+        if (!payload) {
+            return res.status(401).json({ success: false, user: null });
+        }
 
+        const user = await getUserByEmail(payload.email);
+
+        if (!user) {
+            return res.status(404).json({ success: false, user: null });
+        }
+
+        res.status(200).json({ success: true, user });
+    } catch (error) {
+        console.error('Error fetching current user:', error);
+        res.status(500).json({ success: false, error: 'Internal server error', user: null });
+    }
 };
 
 module.exports = {

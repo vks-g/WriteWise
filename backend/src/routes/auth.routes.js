@@ -9,7 +9,7 @@ const { GoogleAuth, GoogleAuthCallback } = require('@/controllers/googleAuthCont
 authRoutes.post('/signup', ValidateSignup, Register);
 authRoutes.post('/login', ValidateLogin, Login);
 authRoutes.post('/logout', Logout);
-authRoutes.get('/me', GetCurrentUser);
+authRoutes.get('/me', AuthenticateUser, GetCurrentUser);
 authRoutes.get('/google',GoogleAuth)
 authRoutes.get('/google/callback',GoogleAuthCallback)
 

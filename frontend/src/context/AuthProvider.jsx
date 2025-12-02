@@ -31,6 +31,8 @@ export const AuthProvider = ({ children }) => {
 
       const currentUser = response.data?.user ?? null
       setUser(currentUser)
+      console.log("Current User fetched:", currentUser);
+      console.log(user)
 
       return {
         success: true,
@@ -50,9 +52,9 @@ export const AuthProvider = ({ children }) => {
     }
   }, [])
 
-  useEffect(() => {
-    getCurrentUser()
-  }, [getCurrentUser])
+  // useEffect(() => {
+  //   getCurrentUser()
+  // }, [getCurrentUser])
 
   const signup = useCallback(async (payload) => {
     try {
@@ -118,7 +120,7 @@ export const AuthProvider = ({ children }) => {
         error: getErrorMessage(error),
         data: error?.response?.data,
       }
-    } 
+    }
     finally {
       setUser(null)
     }
