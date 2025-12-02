@@ -1,11 +1,25 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// Initialize only if API key exists
+const apiKey = process.env.GEMINI_API_KEY;
+let model = null;
 
-const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+if (apiKey) {
+  const genAI = new GoogleGenerativeAI(apiKey);
+  model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+}
+
+// Helper to check if AI is available
+const checkAIAvailable = () => {
+  if (!model) {
+    throw new Error('AI service not configured. Please set GEMINI_API_KEY.');
+  }
+};
 
 // Generate blog title
 const generateTitle = async (content) => {
+  checkAIAvailable();
+
   const prompt = `Generate a catchy, SEO-friendly blog title for the following content. Return ONLY the title, nothing else:
 
 ${content}`;
@@ -17,6 +31,8 @@ ${content}`;
 
 // Generate summary
 const generateSummary = async (content) => {
+  checkAIAvailable();
+
   const prompt = `Write a concise 2-3 sentence summary for the following blog content. The summary should be engaging and capture the main points. Return ONLY the summary, nothing else:
 
 ${content}`;
@@ -28,6 +44,8 @@ ${content}`;
 
 // Generate tags
 const generateTags = async (content) => {
+  checkAIAvailable();
+
   const prompt = `Generate 5 relevant SEO tags/keywords for the following blog content. Return ONLY a JSON array of strings, nothing else. Example: ["tag1", "tag2", "tag3", "tag4", "tag5"]
 
 ${content}`;
@@ -52,6 +70,8 @@ ${content}`;
 
 // Generate blog outline
 const generateOutline = async (content, title) => {
+  checkAIAvailable();
+
   const prompt = `Create a structured blog outline based on the following ${title ? `title: "${title}"` : 'content'}.
 Format it as markdown with headers (##) and bullet points. Keep it concise but comprehensive.
 
@@ -64,6 +84,8 @@ ${content || title}`;
 
 // Rewrite content
 const rewriteContent = async (content) => {
+  checkAIAvailable();
+
   const prompt = `Rewrite the following content to be more engaging, clear, and well-structured. Maintain the original meaning but improve the writing quality. Return ONLY the rewritten content:
 
 ${content}`;

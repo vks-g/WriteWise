@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef } from 'react'
+import Image from 'next/image'
 import ScrollReveal from '@/components/animated/ScrollReveal'
 import GradientText from '@/components/animated/GradientText'
 import ElectricBorder from '@/components/animated/ElectricBorder'
@@ -36,7 +37,7 @@ const AiShowcase = () => {
               </ScrollReveal>
 
               {/* Subheading with gradient */}
-   
+
 
             {/* Body text with ScrollReveal */}
             <ScrollReveal
@@ -110,42 +111,15 @@ const AiShowcase = () => {
                   aspectRatio: '16/9'
                 }}
               >
-                {/* Glassmorphic video container */}
+                {/* AI Image container */}
                 <div className="relative w-full h-full rounded-2xl overflow-hidden bg-gradient-to-br from-white/5 to-white/0 dark:from-black/30 dark:to-black/10 backdrop-blur-md">
-                  {/* Video placeholder with gradient background */}
-                  <div className="w-full h-full bg-gradient-to-br from-primary/20 via-background to-accent/20 dark:from-primary/10 dark:via-black dark:to-accent/10 flex items-center justify-center">
-                    {/* Play button overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center z-20">
-                      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-white/15 dark:bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-white/25 dark:hover:bg-white/15 border border-white/20 dark:border-white/10 transition-colors cursor-pointer">
-                        <svg
-                          className="w-8 h-8 sm:w-10 sm:h-10 text-white ml-1"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                        </svg>
-                      </div>
-                    </div>
-
-                    {/* Placeholder text */}
-                    <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-                      <div className="text-center">
-                        <p className="text-sm sm:text-base text-muted-foreground/60">
-                          AI Editor Demo
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Actual video element (hidden by default, ready for real video) */}
-                  <video
-                    className="w-full h-full object-cover hidden"
-                    controls
-                    poster="/images/video-poster.png"
-                  >
-                    <source src="/videos/ai-editor-demo.mp4" type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
+                  <Image
+                    src="/aiImage.png"
+                    alt="AI Writing Assistant"
+                    fill
+                    className="object-cover"
+                    priority
+                  />
                 </div>
               </ElectricBorder>
             </div>

@@ -101,7 +101,13 @@ const NewPost = () => {
 
   // AI Tool handler
   const handleAITool = async (tool) => {
-    if (!content && tool.id !== "title") {
+    // For title generation, we need content. For others, we need content or title
+    if (tool.id === "title" && !content.trim()) {
+      showNotification("Please add some content first to generate a title", "error");
+      return;
+    }
+
+    if (tool.id !== "title" && !content.trim() && !title.trim()) {
       showNotification("Please add some content first", "error");
       return;
     }
@@ -110,11 +116,13 @@ const NewPost = () => {
       setAiLoading(tool.id);
       setShowAIMenu(false);
 
+      console.log("Calling AI endpoint:", tool.endpoint);
       const response = await axios.post(tool.endpoint, {
-        content: content || title,
-        title: title
+        content: content.trim() || title.trim(),
+        title: title.trim()
       });
 
+      console.log("AI response:", response.data);
       const result = response.data;
 
       switch (tool.id) {
@@ -122,36 +130,47 @@ const NewPost = () => {
           if (result.title) {
             setTitle(result.title);
             showNotification("Title generated!");
+          } else {
+            showNotification("No title generated", "error");
           }
           break;
         case "summary":
           if (result.summary) {
             setSummary(result.summary);
             showNotification("Summary generated!");
+          } else {
+            showNotification("No summary generated", "error");
           }
           break;
         case "tags":
           if (result.tags && Array.isArray(result.tags)) {
             setTags(result.tags.slice(0, 5));
             showNotification("Tags suggested!");
+          } else {
+            showNotification("No tags generated", "error");
           }
           break;
         case "outline":
           if (result.outline) {
             setContent(prev => prev + "\n\n" + result.outline);
             showNotification("Outline added!");
+          } else {
+            showNotification("No outline generated", "error");
           }
           break;
         case "rewrite":
           if (result.content) {
             setContent(result.content);
             showNotification("Content rewritten!");
+          } else {
+            showNotification("No rewritten content", "error");
           }
           break;
       }
     } catch (err) {
       console.error("AI tool error:", err);
-      showNotification("AI feature failed. Try again later.", "error");
+      const errorMessage = err.response?.data?.error || "AI feature failed. Try again later.";
+      showNotification(errorMessage, "error");
     } finally {
       setAiLoading(null);
     }
