@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -23,7 +23,8 @@ import Loader from "@/components/ui/loader";
 
 const PostDetail = () => {
   const { id } = useParams();
-  const { user, isAuthenticated } = useAuth();
+  const router = useRouter();
+  const { user, isAuthenticated, getCurrentUser } = useAuth();
 
   const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
@@ -34,6 +35,11 @@ const PostDetail = () => {
   const [bookmarked, setBookmarked] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [submittingComment, setSubmittingComment] = useState(false);
+
+  // Check authentication on mount
+  useEffect(() => {
+    getCurrentUser();
+  }, [getCurrentUser]);
 
   // Fetch post data
   useEffect(() => {
@@ -182,26 +188,32 @@ const PostDetail = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center shadow-lg shadow-violet-500/25">
-                <Feather className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-lg font-semibold bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
-                WriteWise
-              </span>
+              <Image src="/logo.svg" alt="WriteWise" width={120} height={32} className="h-8 w-auto" style={{ filter: "brightness(0) invert(1)" }}/>
             </Link>
             <div className="flex items-center gap-4">
-              <Link
-                href="/login"
-                className="text-gray-400 hover:text-white transition-colors text-sm font-medium"
-              >
-                Sign In
-              </Link>
-              <Link
-                href="/signup"
-                className="px-4 py-2 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white text-sm font-medium hover:opacity-90 transition-opacity shadow-lg shadow-violet-500/25"
-              >
-                Get Started
-              </Link>
+              {isAuthenticated ? (
+                <Link
+                  href="/dashboard"
+                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white text-sm font-medium hover:opacity-90 transition-opacity shadow-lg shadow-violet-500/25"
+                >
+                  Dashboard
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    className="text-gray-400 hover:text-white transition-colors text-sm font-medium"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/signup"
+                    className="px-4 py-2 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white text-sm font-medium hover:opacity-90 transition-opacity shadow-lg shadow-violet-500/25"
+                  >
+                    Get Started
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -257,10 +269,10 @@ const PostDetail = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white font-semibold text-lg shadow-lg">
-                      {post.author?.charAt(0) || <User className="w-5 h-5" />}
+                      {post.author?.name?.charAt(0) || <User className="w-5 h-5" />}
                     </div>
                     <div>
-                      <p className="text-white font-medium">{post.author || "Anonymous"}</p>
+                      <p className="text-white font-medium">{post.author?.name || "Anonymous"}</p>
                       <p className="text-sm text-gray-500">Author</p>
                     </div>
                   </div>
@@ -368,15 +380,15 @@ const PostDetail = () => {
                     />
                     <div className="flex justify-end mt-3">
                       <button
-                        onClick={handleComment}
+                        onClick={handleAddComment}
                         className="flex items-center gap-2 px-5 py-2.5 rounded-xl
                           bg-gradient-to-r from-violet-500 to-fuchsia-500
                           text-white font-medium
                           hover:opacity-90 hover:shadow-lg hover:shadow-violet-500/25
                           transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled={!commentText.trim() || isSubmitting}
+                        disabled={!commentText.trim() || submittingComment}
                       >
-                        {isSubmitting ? (
+                        {submittingComment ? (
                           <>
                             <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                             Posting...
@@ -423,14 +435,14 @@ const PostDetail = () => {
                         <div className="flex items-start gap-3">
                           {/* Avatar */}
                           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white text-sm font-semibold flex-shrink-0">
-                            {comment.user?.name?.charAt(0) || comment.author?.charAt(0) || "U"}
+                            {comment.user?.name?.charAt(0) || comment.author?.name?.charAt(0) || "U"}
                           </div>
 
                           <div className="flex-1 min-w-0">
                             {/* Name & Date */}
                             <div className="flex items-center justify-between mb-2">
                               <div className="flex items-center gap-2">
-                                <span className="font-medium text-white">{comment.user?.name || comment.author || "Anonymous"}</span>
+                                <span className="font-medium text-white">{comment.user?.name || comment.author?.name || "Anonymous"}</span>
                                 <span className="text-xs text-gray-500">
                                   {formatDate(comment.createdAt || new Date())}
                                 </span>

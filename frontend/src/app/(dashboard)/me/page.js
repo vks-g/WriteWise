@@ -16,7 +16,7 @@ import {
   Edit3
 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import axios from "@/lib/axios";
 import { useAuth } from "@/context/AuthContext";
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
@@ -24,10 +24,16 @@ import Loader from "@/components/ui/loader";
 
 const MyPosts = () => {
   const router = useRouter();
-  const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const searchParams = useSearchParams();
+  const { user, isAuthenticated, loading: authLoading, getCurrentUser } = useAuth();
   const [posts, setPosts] = useState([]);
   const [filteredPosts, setFilteredPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Fetch current user on mount
+  useEffect(() => {
+    getCurrentUser();
+  }, [getCurrentUser]);
   const [stats, setStats] = useState({
     totalPosts: 0,
     totalLikes: 0,
@@ -37,6 +43,14 @@ const MyPosts = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [deletingId, setDeletingId] = useState(null);
   const [activeTab, setActiveTab] = useState("all"); // 'all' | 'published' | 'draft'
+
+  // Get search query from URL params on mount
+  useEffect(() => {
+    const urlSearch = searchParams.get("search");
+    if (urlSearch) {
+      setSearchQuery(urlSearch);
+    }
+  }, [searchParams]);
 
   // Fetch user's posts
   const fetchPosts = useCallback(async () => {

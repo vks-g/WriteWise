@@ -239,9 +239,14 @@ export const BlurImage = ({
   src,
   className,
   alt,
+  fill,
   ...rest
 }) => {
   const [isLoading, setLoading] = useState(true);
+
+  // Filter out Next.js Image specific props that don't work with native img
+  const { blurDataURL, ...safeRest } = rest;
+
   return (
     <img
       className={cn(
@@ -255,9 +260,8 @@ export const BlurImage = ({
       height={height}
       loading="lazy"
       decoding="async"
-      blurDataURL={typeof src === "string" ? src : undefined}
       alt={alt ? alt : "Background of a beautiful view"}
-      {...rest} />
+      {...safeRest} />
   );
 };
 

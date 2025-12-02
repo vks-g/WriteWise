@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -40,7 +40,44 @@ const PublicPosts = () => {
   const [loadingCategory, setLoadingCategory] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
+  const searchTimeout = useRef(null);
+
+  // Handle search - debounced search as user types
+  const handleSearch = (query) => {
+    console.log("handleSearch called with:", query);
+    setSearchQuery(query);
+
+    // Clear previous timeout
+    if (searchTimeout.current) {
+      clearTimeout(searchTimeout.current);
+    }
+
+    if (!query || !query.trim()) {
+      setSearchResults([]);
+      setIsSearching(false);
+      return;
+    }
+
+    // Debounce the search - wait 300ms after user stops typing
+    searchTimeout.current = setTimeout(async () => {
+      try {
+        setIsSearching(true);
+        console.log("Making search request for:", query.trim());
+        const response = await axios.get(`/posts/search?q=${encodeURIComponent(query.trim())}`);
+        console.log("Search response:", response.data);
+        setSearchResults(response.data?.posts || []);
+        console.log("Search results set:", response.data?.posts?.length || 0, "posts");
+      } catch (err) {
+        console.log("Search error:", err.message);
+        setSearchResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300);
+  };
 
   // Check authentication status on page load
   useEffect(() => {
@@ -125,11 +162,18 @@ const PublicPosts = () => {
     }
   };
 
-  // Filter posts by search query
-  const filteredPosts = allPosts.filter(post =>
-    post.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.excerpt?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Get posts to display - use search results if searching, otherwise show all posts
+  const getDisplayedPosts = () => {
+    console.log("getDisplayedPosts called - searchQuery:", searchQuery, "searchResults:", searchResults.length);
+    if (searchQuery && searchQuery.trim()) {
+      return searchResults;
+    }
+    return allPosts;
+  };
+
+  // Check if we're in search mode
+  const isInSearchMode = searchQuery && searchQuery.trim().length > 0;
+  console.log("isInSearchMode:", isInSearchMode, "searchQuery:", searchQuery);
 
   // Format date helper
   const formatDate = (dateString) => {
@@ -200,13 +244,13 @@ const PublicPosts = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white text-xs font-semibold">
-              {post.author?.charAt(0) || <User className="w-4 h-4" />}
+              {post.author?.name?.charAt(0) || <User className="w-4 h-4" />}
             </div>
-            <span className="text-sm text-gray-400 truncate">{post.author || "Anonymous"}</span>
+            <span className="text-sm text-gray-400 truncate">{post.author?.name || "Anonymous"}</span>
           </div>
           <div className="flex items-center gap-1.5 text-xs text-gray-500">
             <Heart className="w-3.5 h-3.5" />
-            {post.likes || 0}
+            {post._count?.likes || post.likes || 0}
           </div>
         </div>
       </div>
@@ -294,7 +338,7 @@ const PublicPosts = () => {
                   type="text"
                   placeholder="Search posts..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => handleSearch(e.target.value)}
                   className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white placeholder-gray-500
                     focus:outline-none focus:border-violet-500/50 focus:bg-white/10 transition-all"
                 />
@@ -312,8 +356,8 @@ const PublicPosts = () => {
         )}
 
         <div className="max-w-7xl mx-auto px-6 py-12">
-          {/* Trending Section */}
-          {loadingTrending ? (
+          {/* Trending Section - Hide when searching */}
+          {!isInSearchMode && (loadingTrending ? (
             <div className="mb-16">
               <h2 className="text-3xl font-bold mb-8">Trending Now</h2>
               <Loader />
@@ -331,7 +375,7 @@ const PublicPosts = () => {
                 onCardClick={(card) => router.push(`/posts/${card.id}`)}
               />
             </div>
-          ) : null}
+          ) : null)}
 
           {/* Mobile Search Bar - Only on mobile when authenticated */}
           {isAuthenticated && (
@@ -347,8 +391,8 @@ const PublicPosts = () => {
             </div>
           )}
 
-          {/* Categories Section */}
-          {categories.length > 0 && (
+          {/* Categories Section - Hide when searching */}
+          {!isInSearchMode && categories.length > 0 && (
             <div className="mb-12">
               <h3 className="text-lg font-semibold mb-4 text-gray-300">Filter by Category</h3>
               <div className="flex items-center gap-3 overflow-x-auto pb-4 scrollbar-hide">
@@ -377,8 +421,8 @@ const PublicPosts = () => {
             </div>
           )}
 
-          {/* Category Posts Section */}
-          {selectedCategory && (
+          {/* Category Posts Section - Hide when searching */}
+          {!isInSearchMode && selectedCategory && (
             <div className="mb-16">
               <h3 className="text-2xl font-bold mb-8">Posts in &ldquo;{selectedCategory}&rdquo;</h3>
               {loadingCategory ? (
@@ -400,10 +444,10 @@ const PublicPosts = () => {
           {/* All Posts Section */}
           <div>
             <h2 className="text-3xl font-bold mb-8">
-              {selectedCategory ? "Other Posts" : "All Posts"}
+              {isInSearchMode ? `Search Results for "${searchQuery}"` : selectedCategory ? "Other Posts" : "All Posts"}
             </h2>
 
-            {loadingAll && !selectedCategory ? (
+            {(loadingAll && !selectedCategory && !isInSearchMode) ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {Array.from({ length: 6 }).map((_, i) => (
                   <PostSkeleton key={i} />
@@ -411,20 +455,27 @@ const PublicPosts = () => {
               </div>
             ) : (
               <>
-                {filteredPosts.length > 0 ? (
+                {isSearching ? (
+                  <div className="flex justify-center py-12">
+                    <Loader />
+                  </div>
+                ) : getDisplayedPosts().length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredPosts.map((post, index) => (
+                    {getDisplayedPosts().map((post, index) => (
                       <PostCard key={post.id} post={post} index={index} />
                     ))}
                   </div>
                 ) : (
                   <div className="text-center py-16">
                     <p className="text-gray-400 text-lg mb-4">
-                      {searchQuery ? "No posts match your search" : "No posts found"}
+                      {searchQuery ? `No posts match "${searchQuery}"` : "No posts found"}
                     </p>
                     {searchQuery && (
                       <button
-                        onClick={() => setSearchQuery("")}
+                        onClick={() => {
+                          setSearchQuery("");
+                          setSearchResults([]);
+                        }}
                         className="px-6 py-2 rounded-lg border border-white/20 hover:border-violet-500/50 bg-white/5 hover:bg-white/10 text-white font-medium transition-all"
                       >
                         Clear Search

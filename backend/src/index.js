@@ -8,8 +8,13 @@ dotenv.config();
 
 const cookieParser = require('cookie-parser');
 
+// Import routes
 const authRoutes = require('@/routes/auth.routes');
-
+const postRoutes = require('@/routes/post.routes');
+const commentRoutes = require('@/routes/comment.routes');
+const likeRoutes = require('@/routes/like.routes');
+const aiRoutes = require('@/routes/ai.routes');
+const userRoutes = require('@/routes/user.routes');
 
 const cors = require('cors');
 app.use(cors({
@@ -20,8 +25,13 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
+// Mount routes
 app.use('/auth', authRoutes);
-
+app.use('/posts', postRoutes);
+app.use('/comments', commentRoutes);
+app.use('/likes', likeRoutes);
+app.use('/ai', aiRoutes);
+app.use('/users', userRoutes);
 
 app.get('/', (req, res) => {
   res.send('Writewise Blog Backend is running');

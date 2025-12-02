@@ -49,12 +49,12 @@ const Dashboard = () => {
   // Fetch user stats
   useEffect(() => {
     const fetchStats = async () => {
-      if (!isAuthenticated) return;
+      if (!isAuthenticated || !user?.id) return;
 
       try {
         setStatsLoading(true);
         // Call user's posts to compute stats client-side
-        const response = await axios.get("/posts/user");
+        const response = await axios.get(`/posts/user/${user.id}`);
         const userPosts = response.data?.posts || [];
 
         const totalPosts = userPosts.length;
@@ -77,7 +77,7 @@ const Dashboard = () => {
     };
 
     fetchStats();
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user?.id]);
 
   // Search placeholders
   const placeholders = [
@@ -87,14 +87,17 @@ const Dashboard = () => {
     "Quick search...",
   ];
 
-  const handleSearch = (value) => {
+  const handleSearch = (e) => {
+    const value = e?.target?.value || "";
     setSearchQuery(value);
-    console.log("Search query:", value);
   };
 
-  const handleSearchSubmit = (value) => {
-    console.log("Search submitted:", value);
-    // Can implement actual search/navigation later
+  const handleSearchSubmit = (e) => {
+    if (e) e.preventDefault();
+    if (searchQuery && searchQuery.trim()) {
+      // Navigate to /me page with search query
+      router.push(`/me?search=${encodeURIComponent(searchQuery.trim())}`);
+    }
   };
 
   // Stat Card Component

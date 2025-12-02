@@ -1,12 +1,84 @@
 "use client";
 
-import React from "react";
-import { FileText, MoreHorizontal, Eye, Heart, Calendar } from "lucide-react";
+import React, { useState, useEffect, useCallback } from "react";
+import { FileText, MoreHorizontal, Eye, Heart, Calendar, Trash2, Edit3 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import axios from "@/lib/axios";
+import { useAuth } from "@/context/AuthContext";
+import Loader from "@/components/ui/loader";
 
 const MyPosts = () => {
-  // Placeholder posts for UI
-  const posts = [];
+  const router = useRouter();
+  const { user, isAuthenticated, loading: authLoading, getCurrentUser } = useAuth();
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState(null);
+
+  // Fetch current user on mount
+  useEffect(() => {
+    getCurrentUser();
+  }, [getCurrentUser]);
+
+  // Fetch user's posts
+  const fetchPosts = useCallback(async () => {
+    if (!user?.id) return;
+
+    try {
+      setLoading(true);
+      const response = await axios.get(`/posts/user/${user.id}`);
+      const userPosts = response.data?.posts || response.data || [];
+      setPosts(userPosts);
+    } catch (err) {
+      console.error("Failed to fetch posts:", err);
+      setPosts([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (!authLoading && isAuthenticated && user?.id) {
+      fetchPosts();
+    }
+  }, [authLoading, isAuthenticated, user?.id, fetchPosts]);
+
+  // Handle delete post
+  const handleDelete = async (postId, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!confirm("Are you sure you want to delete this post?")) return;
+
+    try {
+      setDeletingId(postId);
+      await axios.delete(`/posts/${postId}`);
+      setPosts(prev => prev.filter(p => p.id !== postId));
+    } catch (err) {
+      console.error("Failed to delete post:", err);
+      alert("Failed to delete post");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  // Format date
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric"
+    });
+  };
+
+  // Show loader while auth is loading
+  if (authLoading || loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -48,37 +120,65 @@ const MyPosts = () => {
           {posts.map((post) => (
             <div
               key={post.id}
-              className="group rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 p-5 hover:bg-white/10 transition-all"
+              className="group rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 p-5 hover:bg-white/10 transition-all cursor-pointer"
+              onClick={() => router.push(`/posts/${post.id}`)}
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
-                  <Link
-                    href={`/me/${post.id}`}
-                    className="text-lg font-semibold text-white hover:text-violet-300 transition-colors line-clamp-1"
-                  >
-                    {post.title}
-                  </Link>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Link
+                      href={`/me/${post.id}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-lg font-semibold text-white hover:text-violet-300 transition-colors line-clamp-1"
+                    >
+                      {post.title}
+                    </Link>
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                      post.status === 'published'
+                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                        : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                    }`}>
+                      {post.status === 'published' ? 'Published' : 'Draft'}
+                    </span>
+                  </div>
                   <p className="text-gray-400 text-sm mt-1 line-clamp-2">
-                    {post.excerpt}
+                    {post.summary || post.content?.substring(0, 120) || "No content preview..."}
                   </p>
                   <div className="flex items-center gap-4 mt-3 text-sm text-gray-500">
                     <span className="flex items-center gap-1">
                       <Calendar className="w-4 h-4" />
-                      {post.date}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Eye className="w-4 h-4" />
-                      {post.views}
+                      {formatDate(post.createdAt || new Date())}
                     </span>
                     <span className="flex items-center gap-1">
                       <Heart className="w-4 h-4" />
-                      {post.likes}
+                      {post._count?.likes || 0}
                     </span>
                   </div>
                 </div>
-                <button className="p-2 rounded-lg hover:bg-white/10 transition-colors opacity-0 group-hover:opacity-100">
-                  <MoreHorizontal className="w-5 h-5 text-gray-400" />
-                </button>
+                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      router.push(`/me/${post.id}`);
+                    }}
+                    className="p-2 rounded-lg hover:bg-violet-500/20 transition-colors"
+                    title="Edit post"
+                  >
+                    <Edit3 className="w-4 h-4 text-gray-400 hover:text-violet-400" />
+                  </button>
+                  <button
+                    onClick={(e) => handleDelete(post.id, e)}
+                    className="p-2 rounded-lg hover:bg-red-500/20 transition-colors"
+                    title="Delete post"
+                    disabled={deletingId === post.id}
+                  >
+                    {deletingId === post.id ? (
+                      <div className="w-4 h-4 border-2 border-gray-400/30 border-t-gray-400 rounded-full animate-spin" />
+                    ) : (
+                      <Trash2 className="w-4 h-4 text-gray-400 hover:text-red-400" />
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
           ))}
