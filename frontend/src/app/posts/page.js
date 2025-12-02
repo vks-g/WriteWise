@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Search,
   Calendar,
@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import axios from "@/lib/axios";
 import { useAuth } from "@/context/AuthContext";
+import { toast } from "sonner";
 import Silk from "@/components/animated/Silk";
 import AppleCardsCarousel, { Carousel, Card, BlurImage } from "@/components/ui/apple-cards-carousel";
 import ContainerCover from "@/components/ui/container-cover";
@@ -26,6 +27,7 @@ import Loader, { LoaderOne, LoaderTwo, LoaderThree, LoaderFour, LoaderFive } fro
 
 const PublicPosts = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, isAuthenticated, getCurrentUser } = useAuth();
 
   // State management
@@ -78,6 +80,16 @@ const PublicPosts = () => {
       }
     }, 300);
   };
+
+  // Show welcome toast if user just logged in
+  useEffect(() => {
+    const isLoggedIn = searchParams.get("isLoggedIn");
+    if (isLoggedIn === "true") {
+      toast.success("Welcome! You're now logged in 🎉");
+      // Clear the URL parameter without refreshing the page
+      router.replace("/posts", { scroll: false });
+    }
+  }, [searchParams, router]);
 
   // Check authentication status on page load
   useEffect(() => {

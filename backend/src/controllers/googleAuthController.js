@@ -18,7 +18,7 @@ const GoogleAuth = async(req,res) => {
   };
 
   console.log(options.redirect_uri);
-  
+
   const authUrl = `https://accounts.google.com/o/oauth2/auth?${new URLSearchParams(options).toString()}`;
   res.redirect(authUrl);
 
@@ -51,14 +51,14 @@ const GoogleAuthCallback = async (req, res) => {
     }
 
     const token = GenerateToken({ id: user.id , email : user.email , name : user.name });
-    res.cookie('token', token, { 
+    res.cookie('token', token, {
         httpOnly: true,
         secure: true,
-        sameSite: 'Strict' , 
-        maxAge: 10 * 60 * 60 * 1000 
+        sameSite: 'Strict' ,
+        maxAge: 10 * 60 * 60 * 1000
     });
 
-    res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard?isLoggedIn=true`);      
+    res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/posts?isLoggedIn=true`);
 
 }
 

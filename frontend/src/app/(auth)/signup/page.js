@@ -93,13 +93,13 @@ export default function SignupPage() {
         data = await getCurrentUser()
       }
       toast.success('Account created successfully!')
-      router.push('/dashboard')
-    } 
+      router.push('/posts?isLoggedIn=true')
+    }
     catch (error) {
       console.log(error);
       const message = error?.message || 'Signup failed. Please try again.'
       toast.error(message)
-    } 
+    }
     finally {
       setIsLoading(false)
     }
@@ -109,7 +109,7 @@ export default function SignupPage() {
     setIsLoading(true);
     googleLogin();
   }
-  
+
   useEffect(() => {
     if (OAuthError) {
       toast.error('Google authentication failed. Please try again.')
@@ -118,24 +118,24 @@ export default function SignupPage() {
 
   return (
     <div className="relative w-full min-h-screen bg-gradient-to-b from-black via-black to-purple-900/50 dark:from-black dark:via-black dark:to-pink-900/50 overflow-hidden">
-      
+
       <div className={`fixed inset-0 bg-gradient-to-b from-transparent via-transparent to-gradient-to-b to-purple-600/20 pointer-events-none ${isLoading ? 'backdrop-blur-2xl' : ''}`} />
 
       {isLoading && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
 
           <div className="absolute inset-0 bg-black/40 backdrop-blur-2xl" />
-          
+
 
           <div className="relative z-10 bg-gradient-to-br from-purple-950/80 via-black/90 to-pink-950/80 dark:from-purple-950/80 dark:via-black/90 dark:to-pink-950/80 border border-white/10 rounded-2xl shadow-2xl shadow-purple-500/50 p-8 sm:p-10 max-w-sm w-full">
             <div className="flex flex-col items-center justify-center space-y-6">
-          
+
               <div className="relative w-16 h-16 sm:w-20 sm:h-20">
                 <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-cyan-400 border-r-purple-400 animate-spin" />
                 <div className="absolute inset-2 rounded-full border-4 border-transparent border-b-pink-400 border-l-purple-400 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '2s' }} />
               </div>
-              
-            
+
+
               <div className="text-center space-y-2">
                 <p className="text-lg sm:text-xl font-semibold text-white">Creating Account...</p>
                 <p className="text-sm text-white/60">Render is slow broo 😭 Wait ...</p>
@@ -144,29 +144,29 @@ export default function SignupPage() {
           </div>
         </div>
       )}
-      
+
       <div className={`relative z-10 flex items-center justify-center min-h-screen px-4 py-8 ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}>
-      
+
         <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-          
-      
+
+
           <div className="w-full flex justify-center lg:justify-end lg:pr-48">
             <div className="w-full max-w-sm relative overflow-hidden rounded-2xl shadow-2xl shadow-purple-500/50 before:absolute before:inset-0 before:rounded-2xl before:p-[2px] before:bg-gradient-to-r before:from-purple-500 before:via-pink-500 before:to-purple-500 before:-z-10">
-              
-  
+
+
               <div className="relative z-10 rounded-2xl bg-black/90 dark:bg-black border border-white/10">
-              
-       
+
+
                 <div className="px-5 sm:px-6 pt-6 pb-6 space-y-1">
                   <h1 className="text-2xl font-bold text-white">Create Account</h1>
                   <p className="text-xs text-white/60">Start your blogging journey with WriteWise</p>
                 </div>
 
-       
+
                 <div className="px-5 sm:px-6 py-5 max-h-[calc(100vh-200px)] overflow-y-auto">
                   <form onSubmit={handleSubmit} className="space-y-3">
-                    
-   
+
+
                     <div className="space-y-4">
                       <label htmlFor="name" className="block text-xs font-semibold text-white/80 uppercase tracking-wider mb-2">Full Name</label>
                       <input
@@ -184,7 +184,7 @@ export default function SignupPage() {
                       )}
                     </div>
 
-                 
+
                     <div className="space-y-4">
                       <label htmlFor="email" className="block text-xs font-semibold text-white/80 uppercase tracking-wider mb-2">Email Address</label>
                       <input
@@ -202,7 +202,7 @@ export default function SignupPage() {
                       )}
                     </div>
 
-         
+
                     <div className="space-y-4">
                       <label htmlFor="password" className="block text-xs font-semibold text-white/80 uppercase tracking-wider mb-2">Password</label>
                       <div className="relative">
@@ -230,7 +230,7 @@ export default function SignupPage() {
                       )}
                     </div>
 
-              
+
                     <div className="space-y-4">
                       <label htmlFor="confirmPassword" className="block text-xs font-semibold text-white/80 uppercase tracking-wider mb-2">Confirm Password</label>
                       <div className="relative">
@@ -258,7 +258,7 @@ export default function SignupPage() {
                       )}
                     </div>
 
- 
+
                     <button
                       type="submit"
                       disabled={isLoading}
@@ -268,14 +268,14 @@ export default function SignupPage() {
                     </button>
                   </form>
 
-           
+
                   <div className="relative my-4">
                     <div className="relative flex justify-center text-xs">
                       <span className="px-2 bg-white/5 text-white/60">or </span>
                     </div>
                   </div>
 
- 
+
                   <button
                     type="button"
                     onClick={handleGoogleLogin}
@@ -291,7 +291,7 @@ export default function SignupPage() {
                   </button>
                 </div>
 
-       
+
                 <div className="px-5 sm:px-6 py-4 border-t border-white/10 text-center">
                   <p className="text-xs text-white/70">
                     Already have an account?{' '}
