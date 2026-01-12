@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   Plus,
@@ -94,30 +95,32 @@ const Sidebar = ({ onPopupChange }) => {
       {/* TOP SECTION */}
       <div className="">
         {/* Logo Container - equal spacing left/right, top padding */}
-        <div className="pt-10 px-8 mt-12">
+        <div className="pt-6 px-8 mt-6">
           <Link
             href="/dashboard"
             className="flex justify-center"
             onClick={closeMobileMenu}
           >
-            <img
+            <Image
               src="/logo.svg"
               alt="WriteWise"
-              className="h-10 w-auto brightness-0 mr-6"
-              style={{ filter: "brightness(0) invert(1)" }}
+              className="h-9 w-auto brightness-0 invert mr-6"
+              height={130}
+              width={130}
             />
           </Link>
         </div>
 
         {/* New Post Button - larger with blue-to-violet gradient, centered */}
-        <div className="mt-12 px-8">
+        <div className="mt-30 px-8">
           <Link
             href="/me/new"
             onClick={closeMobileMenu}
             className="flex items-center justify-center gap-3 h-16 w-full px-8 rounded-3xl
-              bg-gradient-to-r from-blue-200 via-blue-200 to-violet-500
-              shadow-lg shadow-blue-500/25
-              hover:shadow-xl hover:shadow-blue-500/40 hover:scale-[1.02]
+              bg-gradient-to-r from-violet-500/30 to-fuchsia-500/30 backdrop-blur-md border border-violet-500/50
+              hover:bg-gradient-to-r hover:from-violet-500/50 hover:to-fuchsia-500/50
+              shadow-lg shadow-violet-500/20
+              hover:shadow-xl hover:shadow-violet-500/40 hover:scale-[1.02]
               transition-all duration-300 group "
           >
             <Plus className="w-7 h-7 text-white" strokeWidth={2.5} />
@@ -201,7 +204,7 @@ const Sidebar = ({ onPopupChange }) => {
           {/* Settings Popup - positioned to the right of three dots */}
           {settingsPopupOpen && (
             <div
-              className="absolute right-0 left-40 bottom-0 translate-x-[calc(100%+8px)] z-50
+              className="absolute right-0 left-40 bottom-0 translate-x-[calc(100%+8px)] z-[60]
                 origin-left animate-in fade-in zoom-in-95 slide-in-from-left-2 duration-200"
             >
               <div className="bg-gray-900/95 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl overflow-hidden min-w-[160px]">
@@ -261,7 +264,7 @@ const Sidebar = ({ onPopupChange }) => {
 
       {/* Mobile Sidebar (Slide-out Drawer) */}
       <aside
-        className={`fixed top-0 left-0 h-full w-72 bg-gray-950/95 backdrop-blur-xl border-r border-white/10 z-50 transform transition-transform duration-300 ease-out lg:hidden ${
+        className={`fixed top-4 left-4 bottom-4 w-72 bg-white/5 backdrop-blur-lg border border-white/10 rounded-3xl z-50 transform transition-transform duration-300 ease-out lg:hidden shadow-2xl shadow-black/20 flex flex-col ${
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -269,7 +272,7 @@ const Sidebar = ({ onPopupChange }) => {
       </aside>
 
       {/* Desktop Sidebar (Fixed Left) */}
-      <aside className="hidden lg:flex fixed top-0 left-0 h-full w-72 bg-gray-950/80 backdrop-blur-xl border-r border-white/10 flex-col z-40">
+      <aside className="hidden lg:flex fixed top-4 left-4 bottom-4 w-72 bg-white/5 backdrop-blur-lg border border-white/10 rounded-3xl z-40 flex-col shadow-2xl shadow-black/20">
         <SidebarContent />
       </aside>
     </>

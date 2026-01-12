@@ -170,8 +170,8 @@ export function PlaceholdersAndVanishInput({
   return (
     <form
       className={cn(
-        "w-full relative max-w-xl mx-auto bg-white dark:bg-zinc-800 h-12 rounded-full overflow-hidden shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),_0px_1px_0px_0px_rgba(25,28,33,0.02),_0px_0px_0px_1px_rgba(25,28,33,0.08)] transition duration-200",
-        value && "bg-gray-50"
+        "w-full relative max-w-xl mx-auto bg-white/3 dark:bg-white/3 backdrop-blur-md h-12 rounded-full overflow-hidden shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),_0px_1px_0px_0px_rgba(25,28,33,0.02),_0px_0px_0px_1px_rgba(25,28,33,0.08)] transition duration-200 border border-white/5",
+        value && "bg-white/5"
       )}
       onSubmit={handleSubmit}>
       <canvas
@@ -198,7 +198,7 @@ export function PlaceholdersAndVanishInput({
       <button
         disabled={!value}
         type="submit"
-        className="absolute right-2 top-1/2 z-50 -translate-y-1/2 h-8 w-8 rounded-full disabled:bg-gray-100 bg-black dark:bg-zinc-900 dark:disabled:bg-zinc-800 transition duration-200 flex items-center justify-center">
+        className="absolute right-2 top-1/2 z-50 -translate-y-1/2 h-8 w-8 rounded-full disabled:bg-white/10 bg-white/20 dark:bg-white/20 dark:disabled:bg-white/10 backdrop-blur-sm border border-white/20 disabled:border-white/10 transition duration-200 flex items-center justify-center hover:bg-white/30 dark:hover:bg-white/30">
         <motion.svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -250,7 +250,7 @@ export function PlaceholdersAndVanishInput({
                 duration: 0.3,
                 ease: "linear",
               }}
-              className="dark:text-zinc-500 text-sm sm:text-base font-normal text-neutral-500 pl-4 sm:pl-12 text-left w-[calc(100%-2rem)] truncate">
+              className="dark:text-white text-sm sm:text-base font-normal text-white pl-4 sm:pl-12 text-left w-[calc(100%-2rem)] truncate">
               {placeholders[currentPlaceholder]}
             </motion.p>
           )}

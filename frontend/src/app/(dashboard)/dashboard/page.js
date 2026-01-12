@@ -23,6 +23,8 @@ const Dashboard = () => {
   });
   const [authLoading, setAuthLoading] = useState(true);
 
+  console.log(user,'user');
+
   // Check authentication on page load
   useEffect(() => {
     const checkAuth = async () => {
@@ -155,10 +157,10 @@ const Dashboard = () => {
       </div>
 
       {/* 2️⃣ Welcome Section */}
-      <div className="pt-4">
+      <div className="pt-8">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2">
           <span className="bg-gradient-to-r from-white via-white to-violet-200 bg-clip-text text-transparent drop-shadow-sm">
-            Welcome back, {user?.username || "Writer"}! 👋
+            Welcome back, {user?.name || "Writer"}! 👋
           </span>
         </h1>
         <p className="text-gray-400 text-lg">

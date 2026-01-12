@@ -340,8 +340,8 @@ const PublicPosts = () => {
         {isAuthenticated && (
           <div className="sticky top-0 z-40 border-b border-white/5 backdrop-blur-md bg-blue-gray-900/20">
             <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-              <Link href="/" className="font-bold text-2xl bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                ✦ WriteWise
+              <Link href="/">
+                <Image src="/logo.svg" alt="WriteWise Logo" width={130} height={130} className="brightness-0 invert" />
               </Link>
 
               {/* Search Bar - Hidden on mobile */}
@@ -351,7 +351,7 @@ const PublicPosts = () => {
                   placeholder="Search posts..."
                   value={searchQuery}
                   onChange={(e) => handleSearch(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white placeholder-gray-500
+                  className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white placeholder-gray-200
                     focus:outline-none focus:border-violet-500/50 focus:bg-white/10 transition-all"
                 />
               </div>
