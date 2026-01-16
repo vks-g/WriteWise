@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
+import { BlurImage } from "@/components/ui/apple-cards-carousel";
 import {
   ArrowLeft,
   Calendar,
@@ -298,21 +298,12 @@ const PostDetail = () => {
                 <div className="float-right lg:w-[600px] ml-8 mb-8">
                   <div className="rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xl shadow-black/20 overflow-hidden h-fit sticky top-24">
                     <div className="relative aspect-video bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 overflow-hidden group w-full">
-                      {post.coverImage && post.coverImage.includes('cloudinary') ? (
-                        <Image
+                      {post.coverImage ? (
+                        <BlurImage
                           src={post.coverImage}
                           alt={post.title}
-                          fill
-                          className="object-cover transition-transform duration-700"
-                          priority
+                          className="absolute inset-0 object-cover transition-transform duration-700"
                         />
-                      ) : post.coverImage ? (
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="text-center">
-                            <Feather className="w-12 h-12 text-white/40 mx-auto mb-2" />
-                            <p className="text-sm text-white/50">Image unavailable</p>
-                          </div>
-                        </div>
                       ) : (
                         <div className="absolute inset-0 flex items-center justify-center">
                           <Feather className="w-12 h-12 text-white/10" />

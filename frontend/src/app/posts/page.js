@@ -197,7 +197,10 @@ const PublicPosts = () => {
   };
 
   // Post card component
-  const PostCard = ({ post, index }) => (
+  const PostCard = ({ post, index }) => {
+    const [imageError, setImageError] = useState(false);
+
+    return (
     <div
       onClick={() => router.push(`/posts/${post.id}`)}
       className="group rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10
@@ -211,26 +214,19 @@ const PublicPosts = () => {
       }}
     >
       {/* Cover Image */}
-      <div className={`aspect-video relative overflow-hidden ${
-        post.coverImage ? '' : 'bg-gradient-to-br from-violet-500/30 to-fuchsia-500/30'
-      }`}>
-        {post.coverImage && post.coverImage.includes('cloudinary') ? (
-          <Image
+      <div className="aspect-video relative overflow-hidden bg-gradient-to-br from-violet-500/30 to-fuchsia-500/30">
+        {post.coverImage ? (
+          <BlurImage
             src={post.coverImage}
             alt={post.title}
-            fill
-            className="object-cover transition-transform duration-500"
+            className="absolute inset-0 object-cover transition-transform duration-500"
           />
-        ) : post.coverImage ? (
+        ) : (
           <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-600/20 to-gray-700/20">
             <div className="text-center">
               <Feather className="w-12 h-12 text-white/40 mx-auto mb-2" />
-              <p className="text-sm text-white/50">Image unavailable</p>
+              <p className="text-sm text-white/50">Image not found</p>
             </div>
-          </div>
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <Feather className="w-12 h-12 text-white/20" />
           </div>
         )}
 
@@ -274,7 +270,8 @@ const PublicPosts = () => {
         </div>
       </div>
     </div>
-  );
+    );
+  };
 
   // Loading skeleton
   const PostSkeleton = () => (
