@@ -210,16 +210,19 @@ const PublicPosts = () => {
         animationFillMode: 'backwards'
       }}
     >
-      {/* Thumbnail */}
+      {/* Cover Image */}
       <div className={`aspect-video relative overflow-hidden ${
-        post.thumbnail ? '' : 'bg-gradient-to-br from-violet-500/30 to-fuchsia-500/30'
+        post.coverImage ? '' : 'bg-gradient-to-br from-violet-500/30 to-fuchsia-500/30'
       }`}>
-        {post.thumbnail ? (
+        {post.coverImage ? (
           <Image
-            src={post.thumbnail}
+            src={post.coverImage}
             alt={post.title}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-500"
+            onError={(e) => {
+              e.target.style.display = 'none';
+            }}
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
@@ -382,7 +385,7 @@ const PublicPosts = () => {
               <AppleCardsCarousel
                 cards={trendingPosts.map(post => ({
                   ...post,
-                  src: post.thumbnail || '/default-post.png'
+                  src: post.coverImage || post.thumbnail || '/default-post.png'
                 }))}
                 onCardClick={(card) => router.push(`/posts/${card.id}`)}
               />

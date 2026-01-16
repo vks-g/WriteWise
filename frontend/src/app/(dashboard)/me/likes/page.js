@@ -109,12 +109,27 @@ const LikedPosts = () => {
               <Link
                 key={post.id || index}
                 href={`/posts/${post.id}`}
-                className="group rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 p-5
+                className="group rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 overflow-hidden
                   hover:bg-white/10 hover:border-violet-500/30 hover:shadow-xl hover:shadow-violet-500/10
                   transition-all duration-300
                   animate-in fade-in slide-in-from-bottom-2"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
+                {/* Cover Image */}
+                {post.coverImage && (
+                  <div className="relative h-32 overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={post.coverImage}
+                      alt={post.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                      }}
+                    />
+                  </div>
+                )}
+                <div className="p-5">
                 {/* Title */}
                 <h3 className="text-lg font-semibold text-white group-hover:text-violet-200 transition-colors line-clamp-2 mb-2">
                   {post.title || "Untitled Post"}
@@ -156,6 +171,7 @@ const LikedPosts = () => {
                     Liked {likedAt ? formatDate(likedAt) : ""}
                   </span>
                   <ExternalLink className="w-4 h-4 text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
                 </div>
               </Link>
             );

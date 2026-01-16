@@ -293,12 +293,15 @@ const PostDetail = () => {
 
               {/* Cover Image */}
               <div className="aspect-video rounded-2xl bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 border border-white/10 mb-10 overflow-hidden relative">
-                {post.thumbnail ? (
+                {post.coverImage ? (
                   <Image
-                    src={post.thumbnail}
+                    src={post.coverImage}
                     alt={post.title}
                     fill
                     className="object-cover"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
                   />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center">

@@ -29,6 +29,7 @@ import Link from "next/link";
 import axios from "@/lib/axios";
 import { useAuth } from "@/context/AuthContext";
 import Loader from "@/components/ui/loader";
+import { DragDropZone } from "@/components/ImageUpload";
 
 const EditPost = () => {
   const { id } = useParams();
@@ -42,6 +43,10 @@ const EditPost = () => {
   const [summary, setSummary] = useState("");
   const [coverImage, setCoverImage] = useState("");
   const [status, setStatus] = useState("draft");
+  const [showCoverUpload, setShowCoverUpload] = useState(false);
+  const [showContentImageUpload, setShowContentImageUpload] = useState(false);
+  const [coverImagePublicId, setCoverImagePublicId] = useState("");
+  const [isDeletingCoverImage, setIsDeletingCoverImage] = useState(false);
 
   // UI States
   const [loading, setLoading] = useState(true);
@@ -59,7 +64,7 @@ const EditPost = () => {
     { icon: Link2, label: "Link", action: () => insertMarkdown("[", "](url)") },
     { icon: Code, label: "Code", action: () => insertMarkdown("`", "`") },
     { icon: Quote, label: "Quote", action: () => insertMarkdown("\n> ", "") },
-    { icon: ImageIcon, label: "Image", action: () => insertMarkdown("![alt](", ")") },
+    { icon: ImageIcon, label: "Image", action: () => setShowContentImageUpload(!showContentImageUpload) },
   ];
 
   const aiTools = [
@@ -204,6 +209,43 @@ const EditPost = () => {
       showNotification(errorMessage, "error");
     } finally {
       setAiLoading(null);
+    }
+  };
+
+  // Delete cover image from Cloudinary
+  const handleDeleteCoverImage = async () => {
+    if (!coverImage) {
+      showNotification("No cover image to delete", "error");
+      return;
+    }
+
+    try {
+      setIsDeletingCoverImage(true);
+      
+      // Extract public_id from URL or use stored value
+      let public_id = coverImagePublicId;
+      if (!public_id && coverImage) {
+        // Fallback: extract from URL
+        const urlParts = coverImage.split('/');
+        const filename = urlParts[urlParts.length - 1];
+        public_id = filename.split('.')[0];
+      }
+
+      if (public_id) {
+        await axios.delete(`/api/upload/image`, {
+          data: { public_id }
+        });
+      }
+
+      // Clear from form
+      setCoverImage("");
+      setCoverImagePublicId("");
+      showNotification("Cover image deleted successfully!");
+    } catch (err) {
+      console.error("Delete error:", err);
+      showNotification("Failed to delete cover image", "error");
+    } finally {
+      setIsDeletingCoverImage(false);
     }
   };
 
@@ -444,19 +486,92 @@ const EditPost = () => {
           />
         </div>
 
-        {/* Cover Image URL */}
+        {/* Cover Image Upload */}
         <div className="px-4 sm:px-6 py-4 border-b border-white/5">
-          <label className="block text-sm font-medium text-gray-400 mb-2">Cover Image URL (optional)</label>
-          <input
-            type="url"
-            placeholder="https://example.com/image.jpg"
-            value={coverImage}
-            onChange={(e) => setCoverImage(e.target.value)}
-            className="w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3
-              text-gray-300 placeholder:text-gray-600
-              focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20
-              transition-all"
-          />
+          <div className="flex items-center justify-between gap-2 mb-4">
+            <label className="block text-sm font-medium text-gray-400">Cover Image (optional)</label>
+            <button
+              type="button"
+              onClick={() => setShowCoverUpload(!showCoverUpload)}
+              className="text-xs text-violet-400 hover:text-violet-300 transition-colors"
+            >
+              {showCoverUpload ? "Use URL" : "Upload Image"}
+            </button>
+          </div>
+
+          {showCoverUpload ? (
+            <DragDropZone
+              onImageUpload={(result) => {
+                setCoverImage(result.imageUrl);
+                setShowCoverUpload(false);
+                showNotification("Cover image uploaded successfully!");
+              }}
+              onError={(error) => {
+                showNotification(error, "error");
+              }}
+              maxWidth={600}
+              showPreview={true}
+            />
+          ) : (
+            <input
+              type="url"
+              placeholder="https://example.com/image.jpg"
+              value={coverImage}
+              onChange={(e) => setCoverImage(e.target.value)}
+              className="w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3
+                text-gray-300 placeholder:text-gray-600
+                focus:outline-none focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20
+                transition-all"
+            />
+          )}
+
+          {coverImage && !showCoverUpload && (
+            <div className="mt-3 space-y-2">
+              {/* Cover Image Preview */}
+              <div className="relative w-full h-40 rounded-lg overflow-hidden border border-white/10">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={coverImage}
+                  alt="Cover preview"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                  }}
+                />
+              </div>
+              {/* Action Buttons */}
+              <div className="p-3 rounded-lg bg-white/5 border border-white/10 flex items-center justify-between">
+                <span className="text-xs text-gray-400">Cover image added</span>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={handleDeleteCoverImage}
+                    disabled={isDeletingCoverImage}
+                    className="text-xs px-3 py-1 rounded bg-red-500/20 hover:bg-red-500/30 text-red-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
+                  >
+                    {isDeletingCoverImage ? (
+                      <>
+                        <div className="w-3 h-3 border-2 border-red-400/30 border-t-red-400 rounded-full animate-spin" />
+                        Deleting...
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 className="w-3 h-3" />
+                        Delete
+                      </>
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCoverImage("")}
+                    className="text-xs px-3 py-1 rounded bg-white/10 hover:bg-white/20 text-gray-300 transition-colors"
+                  >
+                    Clear
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Editor Section */}
@@ -480,6 +595,37 @@ const EditPost = () => {
                 );
               })}
             </div>
+
+            {/* Content Image Upload */}
+            {showContentImageUpload && (
+              <div className="p-4 border-b border-white/10 bg-white/5 animate-in slide-in-from-top-2 fade-in">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm text-gray-400">Upload Image to Content</span>
+                  <button onClick={() => setShowContentImageUpload(false)}>
+                    <X className="w-4 h-4 text-gray-500 hover:text-white" />
+                  </button>
+                </div>
+                <DragDropZone
+                  onImageUpload={(result) => {
+                    const imageMarkdown = `\n![Image](${result.imageUrl})\n`;
+                    const textarea = document.querySelector('textarea[name="content"]');
+                    if (textarea) {
+                      const start = textarea.selectionStart;
+                      const end = textarea.selectionEnd;
+                      const newContent = content.substring(0, start) + imageMarkdown + content.substring(end);
+                      setContent(newContent);
+                    } else {
+                      setContent(content + imageMarkdown);
+                    }
+                    setShowContentImageUpload(false);
+                    showNotification("Image inserted into content!");
+                  }}
+                  onError={(error) => showNotification(error, "error")}
+                  maxWidth={800}
+                  showPreview={false}
+                />
+              </div>
+            )}
 
             {/* Content Area */}
             {previewMode ? (

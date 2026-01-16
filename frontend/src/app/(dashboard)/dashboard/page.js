@@ -146,7 +146,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6 md:space-y-10">
       {/* 1️⃣ Search Bar */}
       <div className="w-full max-w-3xl mx-auto">
         <PlaceholdersAndVanishInput
@@ -157,19 +157,19 @@ const Dashboard = () => {
       </div>
 
       {/* 2️⃣ Welcome Section */}
-      <div className="pt-8">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2">
+      <div className="pt-4 md:pt-8">
+        <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-white mb-2">
           <span className="bg-gradient-to-r from-white via-white to-violet-200 bg-clip-text text-transparent drop-shadow-sm">
             Welcome back, {user?.name || "Writer"}! 👋
           </span>
         </h1>
-        <p className="text-gray-400 text-lg">
+        <p className="text-gray-400 text-sm md:text-base lg:text-lg">
           Here&rsquo;s your writing dashboard overview
         </p>
       </div>
 
       {/* 3️⃣ Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         <StatCard
           icon={PenTool}
           label="Total Posts"
@@ -197,57 +197,57 @@ const Dashboard = () => {
       </div>
 
       {/* 4️⃣ Quick Actions Section */}
-      <div className="pt-8">
-        <h2 className="text-2xl font-bold text-white mb-6">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="pt-4 md:pt-8">
+        <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6">Quick Actions</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
           <button
             onClick={() => router.push("/dashboard/me/new")}
             className="group rounded-xl bg-gradient-to-r from-violet-500/10 to-fuchsia-500/10
               border border-violet-500/20 hover:border-violet-500/50
-              p-6 text-left transition-all duration-300
+              p-4 md:p-6 text-left transition-all duration-300
               hover:bg-gradient-to-r hover:from-violet-500/20 hover:to-fuchsia-500/20
               hover:shadow-lg hover:shadow-violet-500/20">
-            <div className="flex items-center gap-3 mb-2">
-              <PenTool className="w-5 h-5 text-violet-400" />
-              <h3 className="text-lg font-semibold text-white">Create New Post</h3>
+            <div className="flex items-center gap-2 md:gap-3 mb-2">
+              <PenTool className="w-4 md:w-5 h-4 md:h-5 text-violet-400" />
+              <h3 className="text-base md:text-lg font-semibold text-white">Create New Post</h3>
             </div>
-            <p className="text-sm text-gray-400">Start writing your next post</p>
+            <p className="text-xs md:text-sm text-gray-400">Start writing your next post</p>
           </button>
 
           <button
             onClick={() => router.push("/me/posts")}
             className="group rounded-xl bg-gradient-to-r from-blue-500/10 to-violet-500/10
               border border-blue-500/20 hover:border-blue-500/50
-              p-6 text-left transition-all duration-300
+              p-4 md:p-6 text-left transition-all duration-300
               hover:bg-gradient-to-r hover:from-blue-500/20 hover:to-violet-500/20
               hover:shadow-lg hover:shadow-blue-500/20">
-            <div className="flex items-center gap-3 mb-2">
-              <PenTool className="w-5 h-5 text-blue-400" />
-              <h3 className="text-lg font-semibold text-white">My Posts</h3>
+            <div className="flex items-center gap-2 md:gap-3 mb-2">
+              <PenTool className="w-4 md:w-5 h-4 md:h-5 text-blue-400" />
+              <h3 className="text-base md:text-lg font-semibold text-white">My Posts</h3>
             </div>
-            <p className="text-sm text-gray-400">View and manage all your posts</p>
+            <p className="text-xs md:text-sm text-gray-400">View and manage all your posts</p>
           </button>
 
           <button
             onClick={() => router.push("/posts")}
             className="group rounded-xl bg-gradient-to-r from-fuchsia-500/10 to-pink-500/10
               border border-fuchsia-500/20 hover:border-fuchsia-500/50
-              p-6 text-left transition-all duration-300
+              p-4 md:p-6 text-left transition-all duration-300
               hover:bg-gradient-to-r hover:from-fuchsia-500/20 hover:to-pink-500/20
               hover:shadow-lg hover:shadow-fuchsia-500/20">
-            <div className="flex items-center gap-3 mb-2">
-              <TrendingUp className="w-5 h-5 text-fuchsia-400" />
-              <h3 className="text-lg font-semibold text-white">Explore Posts</h3>
+            <div className="flex items-center gap-2 md:gap-3 mb-2">
+              <TrendingUp className="w-4 md:w-5 h-4 md:h-5 text-fuchsia-400" />
+              <h3 className="text-base md:text-lg font-semibold text-white">Explore Posts</h3>
             </div>
-            <p className="text-sm text-gray-400">Discover posts from the community</p>
+            <p className="text-xs md:text-sm text-gray-400">Discover posts from the community</p>
           </button>
         </div>
       </div>
 
       {/* 5️⃣ Placeholder for Future Sections */}
-      <div className="pt-8 pb-16">
-        <h2 className="text-2xl font-bold text-white mb-6">Recent Activity</h2>
-        <div className="rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-8
+      <div className="pt-4 md:pt-8 pb-8 md:pb-16">
+        <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6">Recent Activity</h2>
+        <div className="rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-6 md:p-8
           text-center">
           <p className="text-gray-400">Your recent posts activity will appear here</p>
         </div>

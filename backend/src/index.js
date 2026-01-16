@@ -15,6 +15,7 @@ const commentRoutes = require('@/routes/comment.routes');
 const likeRoutes = require('@/routes/like.routes');
 const aiRoutes = require('@/routes/ai.routes');
 const userRoutes = require('@/routes/user.routes');
+const uploadRoutes = require('@/routes/upload.routes');
 
 const cors = require('cors');
 app.use(cors({
@@ -32,6 +33,7 @@ app.use('/comments', commentRoutes);
 app.use('/likes', likeRoutes);
 app.use('/ai', aiRoutes);
 app.use('/users', userRoutes);
+app.use('/api/upload', uploadRoutes);
 
 app.get('/', (req, res) => {
   res.send('Writewise Blog Backend is running');

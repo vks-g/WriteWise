@@ -120,12 +120,27 @@ const MyComments = () => {
           {comments.map((comment, index) => (
             <div
               key={comment.id || index}
-              className="group rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 p-5
+              className="group rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 overflow-hidden
                 hover:bg-white/10 hover:border-white/20
                 transition-all duration-300
                 animate-in fade-in slide-in-from-bottom-2"
               style={{ animationDelay: `${index * 50}ms` }}
             >
+              {/* Post Cover Image */}
+              {comment.post?.coverImage && (
+                <div className="relative h-24 overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={comment.post.coverImage}
+                    alt={comment.post.title}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                </div>
+              )}
+              <div className="p-5">
               {/* Post info */}
               {comment.post && (
                 <Link
@@ -164,6 +179,7 @@ const MyComments = () => {
                     <Trash2 className="w-4 h-4" />
                   )}
                 </button>
+              </div>
               </div>
             </div>
           ))}

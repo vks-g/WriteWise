@@ -120,10 +120,24 @@ const MyPosts = () => {
           {posts.map((post) => (
             <div
               key={post.id}
-              className="group rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 p-5 hover:bg-white/10 transition-all cursor-pointer"
+              className="group rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 overflow-hidden hover:bg-white/10 transition-all cursor-pointer"
               onClick={() => router.push(`/posts/${post.id}`)}
             >
-              <div className="flex items-start justify-between gap-4">
+              {/* Cover Image Preview */}
+              {post.coverImage && (
+                <div className="relative h-32 overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={post.coverImage}
+                    alt={post.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                </div>
+              )}
+              <div className="flex items-start justify-between gap-4 p-5">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <Link
