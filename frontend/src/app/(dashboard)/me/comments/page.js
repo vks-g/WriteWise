@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { MessageCircle, Calendar, ExternalLink, Trash2, FileText } from "lucide-react";
+import { MessageCircle, Calendar, ExternalLink, Trash2, FileText, Feather } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import axios from "@/lib/axios";
 import { useAuth } from "@/context/AuthContext";
 import Loader from "@/components/ui/loader";
@@ -128,16 +129,22 @@ const MyComments = () => {
             >
               {/* Post Cover Image */}
               {comment.post?.coverImage && (
-                <div className="relative h-24 overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={comment.post.coverImage}
-                    alt={comment.post.title}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                    }}
-                  />
+                <div className="relative h-24 overflow-hidden bg-gradient-to-br from-gray-600/20 to-gray-700/20">
+                  {comment.post.coverImage.includes('cloudinary') ? (
+                    <Image
+                      src={comment.post.coverImage}
+                      alt={comment.post.title}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="text-center">
+                        <Feather className="w-6 h-6 text-white/40 mx-auto" />
+                        <p className="text-xs text-white/50 mt-1">Image unavailable</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
               <div className="p-5">

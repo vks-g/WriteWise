@@ -214,16 +214,20 @@ const PublicPosts = () => {
       <div className={`aspect-video relative overflow-hidden ${
         post.coverImage ? '' : 'bg-gradient-to-br from-violet-500/30 to-fuchsia-500/30'
       }`}>
-        {post.coverImage ? (
+        {post.coverImage && post.coverImage.includes('cloudinary') ? (
           <Image
             src={post.coverImage}
             alt={post.title}
             fill
-            className="object-cover group-hover:scale-105 transition-transform duration-500"
-            onError={(e) => {
-              e.target.style.display = 'none';
-            }}
+            className="object-cover transition-transform duration-500"
           />
+        ) : post.coverImage ? (
+          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-600/20 to-gray-700/20">
+            <div className="text-center">
+              <Feather className="w-12 h-12 text-white/40 mx-auto mb-2" />
+              <p className="text-sm text-white/50">Image unavailable</p>
+            </div>
+          </div>
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
             <Feather className="w-12 h-12 text-white/20" />

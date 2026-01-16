@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Heart, Calendar, User, MessageCircle, ExternalLink } from "lucide-react";
+import { Heart, Calendar, User, MessageCircle, ExternalLink, Feather } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import axios from "@/lib/axios";
 import { useAuth } from "@/context/AuthContext";
 import Loader from "@/components/ui/loader";
@@ -117,16 +118,22 @@ const LikedPosts = () => {
               >
                 {/* Cover Image */}
                 {post.coverImage && (
-                  <div className="relative h-32 overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={post.coverImage}
-                      alt={post.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                      }}
-                    />
+                  <div className="relative h-32 overflow-hidden bg-gradient-to-br from-gray-600/20 to-gray-700/20">
+                    {post.coverImage.includes('cloudinary') ? (
+                      <Image
+                        src={post.coverImage}
+                        alt={post.title}
+                        fill
+                        className="object-cover transition-transform duration-300"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="text-center">
+                          <Feather className="w-8 h-8 text-white/40 mx-auto mb-1" />
+                          <p className="text-xs text-white/50">Image unavailable</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
                 <div className="p-5">

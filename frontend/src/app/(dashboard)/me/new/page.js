@@ -250,6 +250,26 @@ const NewPost = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
+      {/* Animated Gradient Keyframes */}
+      <style>{`
+        @keyframes gradientShift {
+          0% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+          100% {
+            background-position: 0% 50%;
+          }
+        }
+
+        .animate-gradient {
+          background-size: 200% 200%;
+          animation: gradientShift 6s ease infinite;
+        }
+      `}</style>
+
       {/* Notification Toast */}
       {notification && (
         <div
@@ -324,34 +344,72 @@ const NewPost = () => {
           <div className="relative">
             <button
               onClick={() => setShowAIMenu(!showAIMenu)}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl
-                bg-gradient-to-r from-violet-500 to-fuchsia-500
-                text-white text-sm font-medium
-                hover:shadow-lg hover:shadow-violet-500/25
-                transition-all"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-full
+                bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500
+                text-white text-sm font-semibold
+                hover:shadow-xl hover:shadow-cyan-500/30
+                hover:scale-105
+                transition-all duration-100
+                relative overflow-hidden group
+                animate-gradient"
             >
-              <Sparkles className="w-4 h-4" />
-              <span>AI Tools</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 opacity-0 group-hover:opacity-20 transition-opacity duration-200" />
+              <Sparkles className="w-4 h-4 relative z-10 group-hover:animate-spin" />
+              <span className="relative z-10">AI Tools</span>
             </button>
 
             {/* AI Menu Dropdown */}
             {showAIMenu && (
-              <div className="absolute right-0 top-full mt-2 w-56 rounded-xl bg-gray-900/95 backdrop-blur-md border border-white/10 shadow-xl shadow-black/20 z-20 overflow-hidden animate-in fade-in slide-in-from-top-2">
-                {aiTools.map((tool) => (
-                  <button
-                    key={tool.id}
-                    onClick={() => handleAITool(tool)}
-                    disabled={aiLoading !== null}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-left text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-colors disabled:opacity-50"
-                  >
-                    {aiLoading === tool.id ? (
-                      <div className="w-4 h-4 border-2 border-violet-400/30 border-t-violet-400 rounded-full animate-spin" />
-                    ) : (
-                      <tool.icon className="w-4 h-4 text-violet-400" />
-                    )}
-                    {tool.label}
-                  </button>
-                ))}
+              <div className="absolute right-0 top-full mt-3 w-72 rounded-2xl bg-gradient-to-b from-gray-900/98 to-gray-950/98 backdrop-blur-xl border border-white/10 shadow-2xl shadow-cyan-500/20 z-20 overflow-hidden animate-in fade-in slide-in-from-top-3">
+                {/* Header */}
+                <div className="px-6 py-4 border-b border-white/5 bg-gradient-to-r from-cyan-500/10 to-purple-500/10">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Sparkles className="w-4 h-4 text-cyan-400" />
+                    <h3 className="text-sm font-bold text-white">AI Assistant Tools</h3>
+                  </div>
+                  <p className="text-xs text-gray-400">Enhance your content with AI</p>
+                </div>
+
+                {/* Tools Grid */}
+                <div className="p-3 space-y-2">
+                  {aiTools.map((tool) => (
+                    <button
+                      key={tool.id}
+                      onClick={() => handleAITool(tool)}
+                      disabled={aiLoading !== null}
+                      className="w-full flex items-start gap-3 px-4 py-3.5 text-left rounded-lg
+                        bg-white/5 hover:bg-gradient-to-r hover:from-cyan-500/20 hover:to-purple-500/20
+                        border border-white/5 hover:border-cyan-500/30
+                        transition-all duration-200 group
+                        disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <div className="flex-shrink-0 mt-0.5">
+                        {aiLoading === tool.id ? (
+                          <div className="w-4 h-4 border-2 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin" />
+                        ) : (
+                          <tool.icon className="w-4 h-4 text-cyan-400 group-hover:text-cyan-300 transition-colors" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-white group-hover:text-cyan-200 transition-colors">
+                          {tool.label}
+                        </p>
+                        <p className="text-xs text-gray-500 group-hover:text-gray-400 transition-colors line-clamp-1 mt-0.5">
+                          {tool.id === 'title' && 'Generate compelling title'}
+                          {tool.id === 'summary' && 'Create content summary'}
+                          {tool.id === 'tags' && 'Suggest relevant tags'}
+                          {tool.id === 'outline' && 'Generate post outline'}
+                          {tool.id === 'rewrite' && 'Improve your writing'}
+                        </p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Footer Info */}
+                <div className="px-6 py-3 border-t border-white/5 bg-white/2">
+                  <p className="text-xs text-gray-500 text-center">Powered by AI</p>
+                </div>
               </div>
             )}
           </div>
@@ -395,7 +453,7 @@ const NewPost = () => {
             ))}
             <input
               type="text"
-              placeholder={tags.length === 0 ? "Add tags (press Enter)" : tags.length >= 5 ? "" : "Add more..."}
+              placeholder={tags.length === 0 ? "Add tags (press Enter to add a tag)" : tags.length >= 5 ? "" : "Add more..."}
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
               onKeyDown={handleAddTag}
@@ -423,21 +481,20 @@ const NewPost = () => {
         {/* Cover Image Upload */}
         <div className="px-4 sm:px-6 py-4 border-b border-white/5">
           <div className="flex items-center justify-between gap-2 mb-4">
-            <label className="block text-sm font-medium text-gray-400">Cover Image (optional)</label>
+            <label className="block text-sm font-medium text-gray-400">Cover Image</label>
             <button
               type="button"
               onClick={() => setShowCoverUpload(!showCoverUpload)}
               className="text-xs text-violet-400 hover:text-violet-300 transition-colors"
             >
-              {showCoverUpload ? "Use URL" : "Upload Image"}
+              {showCoverUpload ? "Upload Image" : "Use URL"}
             </button>
           </div>
 
-          {showCoverUpload ? (
+          {!showCoverUpload ? (
             <DragDropZone
               onImageUpload={(result) => {
                 setCoverImage(result.imageUrl);
-                setShowCoverUpload(false);
                 showNotification("Cover image uploaded successfully!");
               }}
               onError={(error) => {

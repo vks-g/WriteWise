@@ -221,7 +221,7 @@ const EditPost = () => {
 
     try {
       setIsDeletingCoverImage(true);
-      
+
       // Extract public_id from URL or use stored value
       let public_id = coverImagePublicId;
       if (!public_id && coverImage) {

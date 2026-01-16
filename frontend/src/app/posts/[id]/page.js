@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -20,6 +20,7 @@ import {
 import axios from "@/lib/axios";
 import { useAuth } from "@/context/AuthContext";
 import Loader from "@/components/ui/loader";
+import Silk from "@/components/animated/Silk";
 
 const PostDetail = () => {
   const { id } = useParams();
@@ -35,6 +36,19 @@ const PostDetail = () => {
   const [bookmarked, setBookmarked] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [submittingComment, setSubmittingComment] = useState(false);
+  const [commentFocused, setCommentFocused] = useState(false);
+  const textareaRef = useRef(null);
+
+  // Auto-expand textarea
+  const handleCommentChange = (e) => {
+    const textarea = e.target;
+    setCommentText(textarea.value);
+
+    // Reset height to auto to get the correct scrollHeight
+    textarea.style.height = "auto";
+    // Set height to scrollHeight
+    textarea.style.height = `${Math.min(textarea.scrollHeight, 300)}px`;
+  };
 
   // Check authentication on mount
   useEffect(() => {
@@ -174,68 +188,54 @@ const PostDetail = () => {
   );
 
   return (
-    <div className="min-h-screen">
-      {/* Aurora Background */}
-      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950" />
-        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-violet-600/15 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute top-1/2 right-1/4 w-[500px] h-[500px] bg-fuchsia-600/10 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute bottom-0 left-1/3 w-[400px] h-[400px] bg-indigo-600/10 rounded-full blur-[80px] animate-pulse" style={{ animationDelay: '2s' }} />
+    <div className="min-h-screen bg-gray-950">
+      {/* Silk Animated Background */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <Silk
+          speed={2}
+          scale={0.8}
+          color="#c8ccc9"
+          noiseIntensity={0.8}
+          rotation={0.3}
+        />
+        {/* Subtle overlay for content readability */}
+        <div className="absolute inset-0 bg-gray-950/85" />
       </div>
 
-      {/* Navbar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-gray-900/80 backdrop-blur-xl border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <Link href="/" className="flex items-center gap-3 group">
-              <Image src="/logo.svg" alt="WriteWise" width={120} height={32} className="h-8 w-auto" style={{ filter: "brightness(0) invert(1)" }}/>
-            </Link>
-            <div className="flex items-center gap-4">
-              {isAuthenticated ? (
-                <Link
-                  href="/dashboard"
-                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white text-sm font-medium hover:opacity-90 transition-opacity shadow-lg shadow-violet-500/25"
-                >
-                  Dashboard
-                </Link>
-              ) : (
-                <>
-                  <Link
-                    href="/login"
-                    className="text-gray-400 hover:text-white transition-colors text-sm font-medium"
-                  >
-                    Sign In
-                  </Link>
-                  <Link
-                    href="/signup"
-                    className="px-4 py-2 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white text-sm font-medium hover:opacity-90 transition-opacity shadow-lg shadow-violet-500/25"
-                  >
-                    Get Started
-                  </Link>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </nav>
+
 
       {/* Main Content */}
-      <main className="relative z-10 pt-24 pb-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto">
-          {/* Back Button */}
-          <Link
-            href="/posts"
-            className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8 group"
-          >
-            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            Back to Posts
-          </Link>
+      <main className="relative z-10 min-h-screen pb-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          {/* Header with Back Button and Dashboard */}
+          <div className="flex items-center justify-between pt-8 mb-12">
+            {/* Back Button */}
+            <Link
+              href="/posts"
+              className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors group"
+            >
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+              Back to Posts
+            </Link>
+
+            {/* Dashboard Button */}
+            {isAuthenticated && (
+              <Link
+                href="/dashboard"
+                className="relative px-6 py-2.5 rounded-lg bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-500 text-white font-semibold text-sm overflow-hidden group hover:shadow-lg hover:shadow-cyan-500/50 transition-all duration-300"
+              >
+                {/* Animated background shine effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-20 -translate-x-full group-hover:translate-x-full transition-all duration-700" />
+                <span className="relative">Dashboard</span>
+              </Link>
+            )}
+          </div>
 
           {loading ? (
             <LoadingSkeleton />
           ) : !post ? (
             /* Post Not Found State */
-            <div className="rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 p-12 text-center">
+            <div className="rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 p-12 text-center shadow-2xl shadow-black/20 max-w-2xl mx-auto">
               <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 border border-violet-500/20 flex items-center justify-center mx-auto mb-6">
                 <Feather className="w-10 h-10 text-violet-400" />
               </div>
@@ -245,232 +245,255 @@ const PostDetail = () => {
               </p>
               <Link
                 href="/posts"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl
-                  bg-gradient-to-r from-violet-500 to-fuchsia-500
-                  text-white font-medium
-                  hover:opacity-90 hover:shadow-xl hover:shadow-violet-500/25
-                  transition-all"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white font-medium hover:opacity-90 hover:shadow-xl hover:shadow-violet-500/25 transition-all"
               >
                 Explore Other Posts
               </Link>
             </div>
           ) : (
             <>
-              {/* 1️⃣ Post Header */}
-              <header className="mb-8">
-                <h1
-                  className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight"
-                  style={{ fontWeight: 750 }}
-                >
+              {/* Centered Title Section */}
+              <div className="text-center mb-12 space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                <h1 className="text-5xl sm:text-6xl font-bold text-white leading-tight max-w-4xl mx-auto">
                   {post.title}
                 </h1>
-
-                {/* Author & Meta */}
-                <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white font-semibold text-lg shadow-lg">
-                      {post.author?.name?.charAt(0) || <User className="w-5 h-5" />}
-                    </div>
-                    <div>
-                      <p className="text-white font-medium">{post.author?.name || "Anonymous"}</p>
-                      <p className="text-sm text-gray-500">Author</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-4 text-sm text-gray-400">
-                    <span className="hidden sm:block text-gray-700">•</span>
-                    <span className="flex items-center gap-1.5">
-                      <Calendar className="w-4 h-4" />
-                      {formatDate(post.createdAt || new Date())}
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <Clock className="w-4 h-4" />
-                      {getReadingTime(post.content)} min read
-                    </span>
-                  </div>
+                <div className="flex justify-center">
                 </div>
-              </header>
-
-              {/* Cover Image */}
-              <div className="aspect-video rounded-2xl bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 border border-white/10 mb-10 overflow-hidden relative">
-                {post.coverImage ? (
-                  <Image
-                    src={post.coverImage}
-                    alt={post.title}
-                    fill
-                    className="object-cover"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                    }}
-                  />
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Feather className="w-16 h-16 text-white/10" />
-                  </div>
-                )}
-                {/* Subtle aurora glow on edges */}
-                <div className="absolute inset-0 bg-gradient-to-t from-gray-950/50 via-transparent to-transparent" />
               </div>
 
-              {/* 2️⃣ Content Body */}
-              <article
-                className="prose prose-invert prose-lg max-w-none mb-10
-                  prose-headings:text-white prose-headings:font-bold
-                  prose-p:text-gray-300 prose-p:leading-relaxed
-                  prose-a:text-violet-400 prose-a:no-underline hover:prose-a:underline
-                  prose-strong:text-white
-                  prose-code:bg-white/10 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
-                  prose-pre:bg-gray-900/50 prose-pre:border prose-pre:border-white/10
-                  prose-blockquote:border-l-violet-500 prose-blockquote:bg-white/5 prose-blockquote:py-1 prose-blockquote:px-4 prose-blockquote:rounded-r-xl"
-                dangerouslySetInnerHTML={{ __html: post.content || "<p>No content available.</p>" }}
-              />
+              {/* Author Info - Centered */}
+              <div className="flex justify-center mb-12">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white font-bold shadow-lg shadow-violet-500/30">
+                    {post.author?.name?.charAt(0) || <User className="w-5 h-5" />}
+                  </div>
+                  <div className="text-left">
+                    <p className="text-white font-semibold">{post.author?.name || "Anonymous"}</p>
+                    <div className="flex items-center gap-3 text-xs text-gray-400 mt-0.5">
+                      <span className="flex items-center gap-1">
+                        <Calendar className="w-3 h-3 text-violet-400" />
+                        {formatDate(post.createdAt || new Date())}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-violet-400" />
+                        {getReadingTime(post.content)} min read
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-              {/* 3️⃣ Interaction Row */}
-              <div className="flex items-center justify-between py-6 border-t border-b border-white/10 mb-10">
+              {/* Summary - Full Width Centered */}
+              {post.summary && (
+                <div className="mb-12 flex justify-center animate-in fade-in slide-in-from-top-4 duration-500">
+                  <div className="rounded-2xl bg-gradient-to-r from-cyan-500/15 to-blue-500/15 border border-cyan-500/20 p-6 max-w-2xl">
+                    <p className="text-gray-200 text-lg leading-relaxed italic text-center">{post.summary}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Split Layout Container - Image floats right, text wraps below */}
+              <div className="mb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                {/* Sticky Image floated to right */}
+                <div className="float-right lg:w-[600px] ml-8 mb-8">
+                  <div className="rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xl shadow-black/20 overflow-hidden h-fit sticky top-24">
+                    <div className="relative aspect-video bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 overflow-hidden group w-full">
+                      {post.coverImage && post.coverImage.includes('cloudinary') ? (
+                        <Image
+                          src={post.coverImage}
+                          alt={post.title}
+                          fill
+                          className="object-cover transition-transform duration-700"
+                          priority
+                        />
+                      ) : post.coverImage ? (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="text-center">
+                            <Feather className="w-12 h-12 text-white/40 mx-auto mb-2" />
+                            <p className="text-sm text-white/50">Image unavailable</p>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <Feather className="w-12 h-12 text-white/10" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Content Text wraps around the floated image */}
+                <article
+                  className="prose prose-invert prose-lg max-w-none
+                    prose-headings:text-white prose-headings:font-bold prose-headings:mt-6 prose-headings:mb-3
+                    prose-p:text-gray-300 prose-p:leading-9 prose-p:mb-4
+                    prose-a:text-violet-400 prose-a:no-underline hover:prose-a:underline prose-a:font-medium
+                    prose-strong:text-white prose-strong:font-bold
+                    prose-em:text-gray-200
+                    prose-code:bg-white/10 prose-code:text-violet-300 prose-code:px-2 prose-code:py-1 prose-code:rounded prose-code:text-sm prose-code:font-mono
+                    prose-pre:bg-gray-900/70 prose-pre:border prose-pre:border-white/10 prose-pre:rounded-xl
+                    prose-blockquote:border-l-4 prose-blockquote:border-violet-500 prose-blockquote:bg-white/5 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:rounded-r-xl prose-blockquote:not-italic
+                    prose-blockquote:text-gray-200
+                    prose-img:rounded-2xl prose-img:shadow-lg prose-img:shadow-black/30
+                    prose-hr:border-white/10"
+                  dangerouslySetInnerHTML={{ __html: post.content || "<p>No content available.</p>" }}
+                />
+
+                {/* Clear float for elements after */}
+                <div className="clear-both" />
+              </div>
+
+              {/* Like & Share Buttons Below - Full Width */}
+              <div className="max-w-4xl mb-12">
                 <div className="flex items-center gap-3">
                   <button
                     onClick={handleLike}
-                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl
-                      transition-all duration-300 ${
+                    className={`flex items-center gap-2 px-5 py-3 rounded-lg transition-all duration-300 ${
                       liked
-                        ? "bg-rose-500/20 text-rose-400 border border-rose-500/30"
-                        : "bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10 hover:text-white"
+                        ? "bg-rose-500/20 text-rose-400 border border-rose-500/30 shadow-lg shadow-rose-500/10"
+                        : "bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10 hover:text-white hover:border-white/20"
                     }`}
                   >
                     <Heart className={`w-5 h-5 ${liked ? "fill-current" : ""}`} />
                     <span className="text-sm font-medium">{likeCount}</span>
                   </button>
-                  <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-gray-400 hover:text-white">
-                    <MessageCircle className="w-5 h-5" />
-                    <span className="text-sm font-medium">{comments.length}</span>
-                  </button>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setBookmarked(!bookmarked)}
-                    className={`p-2.5 rounded-xl transition-all duration-300 ${
-                      bookmarked
-                        ? "bg-violet-500/20 text-violet-400 border border-violet-500/30"
-                        : "bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10 hover:text-white"
-                    }`}
-                  >
-                    <Bookmark className={`w-5 h-5 ${bookmarked ? "fill-current" : ""}`} />
-                  </button>
-                  <button
-                    onClick={() => console.log("Share clicked")}
-                    className="p-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-gray-400 hover:text-white"
-                  >
+                  <button className="flex items-center gap-2 px-5 py-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-gray-400 hover:text-white hover:border-white/20">
                     <Share2 className="w-5 h-5" />
+                    <span className="text-sm font-medium">Share</span>
                   </button>
                 </div>
               </div>
 
-              {/* 4️⃣ Comments Section */}
-              <section>
-                <h2 className="text-2xl font-bold text-white mb-6">
-                  Comments {comments.length > 0 && `(${comments.length})`}
-                </h2>
-
-                {/* Comment Input */}
-                {isAuthenticated ? (
-                  <div className="rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 p-5 mb-6">
-                    <textarea
-                      placeholder="Share your thoughts..."
-                      value={commentText}
-                      onChange={(e) => setCommentText(e.target.value)}
-                      className="w-full bg-transparent text-gray-300 placeholder:text-gray-600
-                        focus:outline-none resize-none min-h-[100px] leading-relaxed"
-                    />
-                    <div className="flex justify-end mt-3">
-                      <button
-                        onClick={handleAddComment}
-                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl
-                          bg-gradient-to-r from-violet-500 to-fuchsia-500
-                          text-white font-medium
-                          hover:opacity-90 hover:shadow-lg hover:shadow-violet-500/25
-                          transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled={!commentText.trim() || submittingComment}
-                      >
-                        {submittingComment ? (
-                          <>
-                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                            Posting...
-                          </>
-                        ) : (
-                          <>
-                            <Send className="w-4 h-4" />
-                            Post Comment
-                          </>
-                        )}
-                      </button>
-                    </div>
+              {/* COMMENTS SECTION - Full Width Below */}
+              <div className="mt-16 border-t border-white/10 pt-12 max-w-4xl">
+                <section className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <div>
+                    <h2 className="text-3xl font-bold text-white mb-2">
+                      Comments {comments.length > 0 && `(${comments.length})`}
+                    </h2>
+                    <p className="text-gray-400">Join the conversation</p>
                   </div>
-                ) : (
-                  <div className="rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 p-5 mb-6 text-center">
-                    <p className="text-gray-400">
-                      <button onClick={() => router.push('/login')} className="text-violet-400 hover:text-violet-300">
-                        Login
-                      </button>
-                      {" "}to leave a comment
-                    </p>
-                  </div>
-                )}
 
-                {/* Comments List */}
-                {commentsLoading ? (
-                  <div className="flex justify-center py-8">
-                    <Loader />
-                  </div>
-                ) : comments.length === 0 ? (
-                  <div className="rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 p-8 text-center">
-                    <MessageCircle className="w-10 h-10 text-gray-600 mx-auto mb-3" />
-                    <p className="text-gray-500">No comments yet. Be the first to share your thoughts!</p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {comments.map((comment, index) => (
-                      <div
-                        key={comment.id || index}
-                        className="rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 p-5
-                          animate-in fade-in slide-in-from-bottom-2"
-                        style={{ animationDelay: `${index * 50}ms` }}
-                      >
-                        <div className="flex items-start gap-3">
-                          {/* Avatar */}
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white text-sm font-semibold flex-shrink-0">
-                            {comment.user?.name?.charAt(0) || comment.author?.name?.charAt(0) || "U"}
-                          </div>
+                  {/* Comment Input */}
+                  {isAuthenticated ? (
+                    <div className="flex items-start gap-4">
+                      {/* User Avatar */}
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0 shadow-lg shadow-violet-500/20">
+                        {user?.name?.charAt(0) || "U"}
+                      </div>
 
-                          <div className="flex-1 min-w-0">
-                            {/* Name & Date */}
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="flex items-center gap-2">
-                                <span className="font-medium text-white">{comment.user?.name || comment.author?.name || "Anonymous"}</span>
-                                <span className="text-xs text-gray-500">
-                                  {formatDate(comment.createdAt || new Date())}
-                                </span>
-                              </div>
-                              {/* Delete button for comment owner */}
-                              {user && (comment.userId === user.id || comment.user?.id === user.id) && (
-                                <button
-                                  onClick={() => handleDeleteComment(comment.id)}
-                                  className="text-gray-500 hover:text-red-400 transition-colors p-1"
-                                  title="Delete comment"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
-                              )}
-                            </div>
+                      <div className="flex-1">
+                        <textarea
+                          ref={textareaRef}
+                          placeholder="Share your thoughts on this post..."
+                          value={commentText}
+                          onChange={handleCommentChange}
+                          onFocus={() => setCommentFocused(true)}
+                          onBlur={() => setCommentFocused(false)}
+                          className="w-full bg-transparent text-gray-300 placeholder:text-gray-400
+                            focus:outline-none resize-none min-h-[40px] leading-relaxed text-base overflow-hidden"
+                        />
 
-                            {/* Comment Body */}
-                            <p className="text-gray-400 leading-relaxed">{comment.content || comment.body}</p>
-                          </div>
+                        {/* Animated Underline */}
+                        <div className={`h-px mb-4 transition-all duration-300 ${
+                          commentFocused ? 'bg-white opacity-100' : 'bg-white/20 opacity-0'
+                        } animate-in fade-in`} />
+
+                        <div className="flex justify-end gap-3">
+                          <button
+                            onClick={() => setCommentText("")}
+                            className="px-6 py-2 rounded-lg text-gray-400 hover:text-white transition-colors font-medium"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={handleAddComment}
+                            className="flex items-center gap-2 px-6 py-2 rounded-lg
+                              bg-gradient-to-r from-cyan-500 to-blue-500
+                              text-white font-semibold
+                              hover:opacity-90 hover:shadow-lg hover:shadow-cyan-500/25
+                              transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={!commentText.trim() || submittingComment}
+                          >
+                            {submittingComment ? (
+                              <>
+                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                Posting...
+                              </>
+                            ) : (
+                              <>
+                                <Send className="w-4 h-4" />
+                                Comment
+                              </>
+                            )}
+                          </button>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                )}
-              </section>
+                    </div>
+                  ) : (
+                    <div className="rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 p-6 text-center">
+                      <p className="text-gray-400">
+                        <button onClick={() => router.push('/login')} className="text-violet-400 hover:text-violet-300 font-medium">
+                          Login
+                        </button>
+                        {" "}to leave a comment
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Comments List */}
+                  {commentsLoading ? (
+                    <div className="flex justify-center py-12">
+                      <Loader />
+                    </div>
+                  ) : comments.length === 0 ? (
+                    <div className="rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 p-8 text-center">
+                      <MessageCircle className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+                      <p className="text-gray-500 text-lg">No comments yet. Be the first!</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-6">
+                      {comments.map((comment, index) => (
+                        <div
+                          key={comment.id || index}
+                          className="flex items-start gap-4
+                            animate-in fade-in slide-in-from-bottom-2"
+                          style={{ animationDelay: `${index * 50}ms` }}
+                        >
+                          {/* Avatar */}
+                            <div className="w-11 h-11 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white text-sm font-bold flex-shrink-0 shadow-lg shadow-violet-500/20">
+                              {comment.user?.name?.charAt(0) || comment.author?.name?.charAt(0) || "U"}
+                            </div>
+
+                            <div className="flex-1 min-w-0">
+                              {/* Header */}
+                              <div className="flex items-center justify-between gap-2 mb-2">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <span className="font-semibold text-white truncate">{comment.user?.name || comment.author?.name || "Anonymous"}</span>
+                                  <span className="text-xs text-gray-500 flex-shrink-0">
+                                    {formatDate(comment.createdAt || new Date())}
+                                  </span>
+                                </div>
+                                {user && (comment.userId === user.id || comment.user?.id === user.id) && (
+                                  <button
+                                    onClick={() => handleDeleteComment(comment.id)}
+                                    className="text-gray-500 hover:text-red-400 transition-colors p-1 flex-shrink-0 hover:scale-125"
+                                    title="Delete comment"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                )}
+                              </div>
+
+                              {/* Body */}
+                              <p className="text-gray-300 leading-relaxed">{comment.content || comment.body}</p>
+                            </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </section>
+              </div>
             </>
           )}
         </div>
@@ -480,3 +503,4 @@ const PostDetail = () => {
 };
 
 export default PostDetail;
+
