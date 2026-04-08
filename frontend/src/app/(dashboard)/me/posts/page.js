@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { FileText, MoreHorizontal, Eye, Heart, Calendar, Trash2, Edit3 } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import axios from "@/lib/axios";
+import { FileText, MoreHorizontal, Eye, Heart, Calendar, Trash2, Edit3, Feather } from "lucide-react"
+import Link from "next/link"
+import Image from "next/image"
+import { useRouter } from "next/navigation"
+import axios from "@/lib/axios"
 import { useAuth } from "@/context/AuthContext";
 import Loader from "@/components/ui/loader";
 
@@ -120,10 +121,30 @@ const MyPosts = () => {
           {posts.map((post) => (
             <div
               key={post.id}
-              className="group rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 p-5 hover:bg-white/10 transition-all cursor-pointer"
+              className="group rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 overflow-hidden hover:bg-white/10 transition-all cursor-pointer"
               onClick={() => router.push(`/posts/${post.id}`)}
             >
-              <div className="flex items-start justify-between gap-4">
+              {/* Cover Image Preview */}
+              {post.coverImage && (
+                <div className="relative h-32 overflow-hidden bg-gradient-to-br from-gray-600/20 to-gray-700/20">
+                  {post.coverImage.includes('cloudinary') ? (
+                    <Image
+                      src={post.coverImage}
+                      alt={post.title}
+                      fill
+                      className="object-cover transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="text-center">
+                        <Feather className="w-8 h-8 text-white/40 mx-auto mb-1" />
+                        <p className="text-xs text-white/50">Image unavailable</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+              <div className="flex items-start justify-between gap-4 p-5">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <Link

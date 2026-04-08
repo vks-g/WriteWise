@@ -244,7 +244,9 @@ const Sidebar = ({ onPopupChange }) => {
       {/* Mobile Menu Toggle Button */}
       <button
         onClick={toggleMobileMenu}
-        className="fixed top-4 left-4 z-50 p-3 rounded-xl bg-gray-900/80 backdrop-blur-xl border border-white/10 shadow-lg lg:hidden hover:bg-gray-900/90 transition-colors"
+        className={`fixed top-4 left-4 z-50 p-3 rounded-xl bg-gray-900/80 backdrop-blur-xl border border-white/10 shadow-lg lg:hidden hover:bg-gray-900/90 transition-colors ${
+          mobileMenuOpen ? "opacity-0 pointer-events-none" : "opacity-100"
+        }`}
         aria-label="Toggle menu"
       >
         {mobileMenuOpen ? (
@@ -264,8 +266,8 @@ const Sidebar = ({ onPopupChange }) => {
 
       {/* Mobile Sidebar (Slide-out Drawer) */}
       <aside
-        className={`fixed top-4 left-4 bottom-4 w-72 bg-white/5 backdrop-blur-lg border border-white/10 rounded-3xl z-50 transform transition-transform duration-300 ease-out lg:hidden shadow-2xl shadow-black/20 flex flex-col ${
-          mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+        className={`fixed top-4 left-4 bottom-4 w-72 bg-white/5 backdrop-blur-lg border border-white/10 rounded-3xl z-50 transform transition-all duration-300 ease-out lg:hidden shadow-2xl shadow-black/20 flex flex-col ${
+          mobileMenuOpen ? "translate-x-0 opacity-100" : "-translate-x-[calc(100%+32px)] opacity-0 pointer-events-none"
         }`}
       >
         <SidebarContent />

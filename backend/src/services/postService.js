@@ -1,4 +1,5 @@
 const { prisma } = require('@/config/db/db');
+const { deleteImageFromCloudinary } = require('@/config/cloudinary');
 
 // Get all posts with optional filters
 const getAllPosts = async ({ search, tag, sort, page = 1, limit = 10 }) => {
@@ -168,9 +169,40 @@ const updatePost = async (id, data) => {
 
 // Delete post
 const deletePost = async (id) => {
-  return await prisma.post.delete({
-    where: { id: Number(id) }
-  });
+  try {
+    // Get post first to extract cover image
+    const post = await prisma.post.findUnique({
+      where: { id: Number(id) },
+      select: { coverImage: true, coverImagePublicId: true }
+    });
+
+    // Delete cover image from Cloudinary if it exists
+    if (post && post.coverImage) {
+      try {
+        if (post.coverImagePublicId) {
+          await deleteImageFromCloudinary(post.coverImagePublicId);
+        } else {
+          // Fallback: Extract public_id from URL
+          const urlParts = post.coverImage.split('/');
+          const filename = urlParts[urlParts.length - 1];
+          const public_id = filename.split('.')[0];
+
+          // Try to handle folder if visible in URL structure (fragile)
+          // Simplified: just try deleting what looks like the ID
+          await deleteImageFromCloudinary(public_id);
+        }
+      } catch (error) {
+        console.error('Error deleting cover image from Cloudinary:', error);
+      }
+    }
+
+    // Delete post from database
+    return await prisma.post.delete({
+      where: { id: Number(id) }
+    });
+  } catch (error) {
+    throw error;
+  }
 };
 
 // Search posts

@@ -29,6 +29,7 @@ model Post {
   content    String
   summary    String?
   coverImage String?
+  coverImagePublicId String?
   tags       String[]
   author     User      @relation(fields: [authorId], references: [id])
   authorId   Int

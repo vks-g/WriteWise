@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Heart, Calendar, User, MessageCircle, ExternalLink } from "lucide-react";
+import { Heart, Calendar, User, MessageCircle, ExternalLink, Feather } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import axios from "@/lib/axios";
 import { useAuth } from "@/context/AuthContext";
 import Loader from "@/components/ui/loader";
@@ -109,12 +110,33 @@ const LikedPosts = () => {
               <Link
                 key={post.id || index}
                 href={`/posts/${post.id}`}
-                className="group rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 p-5
+                className="group rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 overflow-hidden
                   hover:bg-white/10 hover:border-violet-500/30 hover:shadow-xl hover:shadow-violet-500/10
                   transition-all duration-300
                   animate-in fade-in slide-in-from-bottom-2"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
+                {/* Cover Image */}
+                {post.coverImage && (
+                  <div className="relative h-32 overflow-hidden bg-gradient-to-br from-gray-600/20 to-gray-700/20">
+                    {post.coverImage.includes('cloudinary') ? (
+                      <Image
+                        src={post.coverImage}
+                        alt={post.title}
+                        fill
+                        className="object-cover transition-transform duration-300"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="text-center">
+                          <Feather className="w-8 h-8 text-white/40 mx-auto mb-1" />
+                          <p className="text-xs text-white/50">Image unavailable</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+                <div className="p-5">
                 {/* Title */}
                 <h3 className="text-lg font-semibold text-white group-hover:text-violet-200 transition-colors line-clamp-2 mb-2">
                   {post.title || "Untitled Post"}
@@ -156,6 +178,7 @@ const LikedPosts = () => {
                     Liked {likedAt ? formatDate(likedAt) : ""}
                   </span>
                   <ExternalLink className="w-4 h-4 text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
                 </div>
               </Link>
             );

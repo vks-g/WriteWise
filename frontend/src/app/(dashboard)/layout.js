@@ -25,8 +25,8 @@ const DashboardLayout = ({ children }) => {
       {/* Sidebar */}
       <Sidebar onPopupChange={setPopupOpen} />
 
-      {/* Right Content Area */}
-      <main className="fixed inset-0 lg:left-4 lg:top-4 lg:bottom-4 lg:right-4 lg:ml-76 z-20 flex items-stretch">
+      {/* Right Content Area - Hidden on mobile, visible on md and up */}
+      <main className="hidden md:fixed md:inset-0 md:z-20 md:flex md:items-stretch md:left-4 md:top-4 md:bottom-4 md:right-4 md:ml-76">
         {/* Popup Overlay - covers only the content area */}
         {popupOpen && (
           <div
@@ -37,13 +37,20 @@ const DashboardLayout = ({ children }) => {
 
         {/* Content Container - glassmorphic floating window */}
         <div className="w-full">
-          <div className="h-full bg-white/5 backdrop-blur-lg border border-white/10 rounded-3xl shadow-2xl shadow-black/20 overflow-hidden flex flex-col">
-            <div className="overflow-y-auto flex-1 p-6 lg:p-8">
+          <div className="h-full bg-white/5 backdrop-blur-lg border border-white/10 rounded-3xl md:rounded-3xl shadow-2xl shadow-black/20 overflow-hidden flex flex-col">
+            <div className="overflow-y-auto flex-1 p-4 md:p-8">
               {children}
             </div>
           </div>
         </div>
       </main>
+
+      {/* Mobile Content - Full screen on mobile, hidden on md and up */}
+      <div className="fixed inset-0 md:hidden z-10 flex flex-col overflow-hidden">
+        <div className="flex-1 overflow-y-auto p-4 pt-20">
+          {children}
+        </div>
+      </div>
     </div>
   );
 };

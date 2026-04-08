@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { MessageCircle, Calendar, ExternalLink, Trash2, FileText } from "lucide-react";
+import { MessageCircle, Calendar, ExternalLink, Trash2, FileText, Feather } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import axios from "@/lib/axios";
 import { useAuth } from "@/context/AuthContext";
 import Loader from "@/components/ui/loader";
@@ -120,12 +121,33 @@ const MyComments = () => {
           {comments.map((comment, index) => (
             <div
               key={comment.id || index}
-              className="group rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 p-5
+              className="group rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 overflow-hidden
                 hover:bg-white/10 hover:border-white/20
                 transition-all duration-300
                 animate-in fade-in slide-in-from-bottom-2"
               style={{ animationDelay: `${index * 50}ms` }}
             >
+              {/* Post Cover Image */}
+              {comment.post?.coverImage && (
+                <div className="relative h-24 overflow-hidden bg-gradient-to-br from-gray-600/20 to-gray-700/20">
+                  {comment.post.coverImage.includes('cloudinary') ? (
+                    <Image
+                      src={comment.post.coverImage}
+                      alt={comment.post.title}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="text-center">
+                        <Feather className="w-6 h-6 text-white/40 mx-auto" />
+                        <p className="text-xs text-white/50 mt-1">Image unavailable</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+              <div className="p-5">
               {/* Post info */}
               {comment.post && (
                 <Link
@@ -164,6 +186,7 @@ const MyComments = () => {
                     <Trash2 className="w-4 h-4" />
                   )}
                 </button>
+              </div>
               </div>
             </div>
           ))}
